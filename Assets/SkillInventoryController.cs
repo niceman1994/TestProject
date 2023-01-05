@@ -12,6 +12,7 @@ public class SkillInventoryController : MonoBehaviour
 		{
             GameObject Obj = Instantiate(HorizontalListPrefab);
             Obj.transform.SetParent(transform);
+            Obj.name = "HorizontalList";
         }
     }
 }
