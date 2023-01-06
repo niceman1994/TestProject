@@ -20,7 +20,7 @@ public class ItemController : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 	public void OnPointerDown(PointerEventData eventData)
 	{
 		transform.SetParent(Parent.transform);
-		transform.localScale = Vector3.Lerp(transform.localScale, transform.localScale * 0.85f, 1.0f);
+		transform.localScale = new Vector3(0.85f, 0.85f, 0.85f);
 
 		Debug.Log("OnPointerDown");
 	}
