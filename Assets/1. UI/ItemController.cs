@@ -4,21 +4,22 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class ItemController : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler, IPointerEnterHandler, IPointerExitHandler
+public class ItemController : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler, IPointerEnterHandler, IPointerExitHandler, IEndDragHandler
 {
 	[SerializeField] private RectTransform SlotList;
 	[SerializeField] private GameObject Parent;
+	private Animator animator;
 
 	public void OnDrag(PointerEventData eventData)
 	{
 		transform.position = eventData.position; // 현재 좌표에 클릭한 좌표를 대입
-		transform.SetParent(Parent.transform);
 
 		Debug.Log("OnDrag");
 	}
 
 	public void OnPointerDown(PointerEventData eventData)
 	{
+		transform.SetParent(Parent.transform);
 		transform.localScale = Vector3.Lerp(transform.localScale, transform.localScale * 0.85f, 1.0f);
 
 		Debug.Log("OnPointerDown");
@@ -36,14 +37,22 @@ public class ItemController : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 
 	public void OnPointerUp(PointerEventData eventData) // 아이템을 드래그해서 슬롯안에 들어가게 하기
 	{
-		InputItem();
-
-		transform.localScale = new Vector3(1, 1, 1);
+		SlotinItem();
 
 		Debug.Log("OnPointerUp");
 	}
 
-	private void InputItem()
+	public void OnEndDrag(PointerEventData eventData)
+	{
+		Debug.Log("OnEndDrag");
+	}
+
+	void Start()
+    {
+		animator = GetComponent<Animator>();
+	}
+
+	private void SlotinItem()
 	{
 		for (int i = 0; i < SlotList.transform.childCount - 1; ++i)
 		{
@@ -56,6 +65,10 @@ public class ItemController : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 				{
 					transform.SetParent(SlotList.transform.GetChild(i).GetChild(j));
 					transform.position = _position;
+				}
+				else
+				{
+					transform.localScale = new Vector3(1, 1, 1);
 				}
 			}
 		}
