@@ -22,16 +22,15 @@ public class ToggleController : MonoBehaviour
 
 	public void ToggleButton()
 	{
-		Check = Check ? false : true;
+		SliderController.Instance.MoveCheck = SliderController.Instance.MoveCheck ? false : true;
 
-		Anim.SetBool("Check", Check);
+		Anim.SetBool("Check", SliderController.Instance.MoveCheck);
+
+		if (SliderController.Instance.MoveCheck)
+			StartCoroutine(SliderController.Instance.SlideInCoroutine_01());
+		else
+			StartCoroutine(SliderController.Instance.SlideOutCoroutine_01());
 
 		//InventoryObject.SetActive(!Check);
-	}
-
-	public bool GetBoolCheck(bool check)
-	{
-		check = Check;
-		return check;
 	}
 }
