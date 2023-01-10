@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.4465782, g: 0.49641252, b: 0.5748167, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2173,7 +2173,6 @@ GameObject:
   - component: {fileID: 2083688242}
   - component: {fileID: 2083688241}
   - component: {fileID: 2083688243}
-  - component: {fileID: 2083688244}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -2252,27 +2251,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SkillSlotPrefab: {fileID: 6547925619019239509, guid: 3d80890edccde18498d754c9bb027fa4, type: 3}
---- !u!114 &2083688244
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2083688239}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 15
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 0
-  m_StartCorner: 0
-  m_StartAxis: 0
-  m_CellSize: {x: 100, y: 100}
-  m_Spacing: {x: 14, y: 0}
-  m_Constraint: 0
-  m_ConstraintCount: 2
