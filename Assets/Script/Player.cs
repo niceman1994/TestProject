@@ -17,6 +17,7 @@ public class Player : MonoBehaviour
     public int maxTorque;
 
     Rigidbody rigid;
+    float Speed;
 
     private void Awake()
     {
@@ -28,17 +29,27 @@ public class Player : MonoBehaviour
         maxTorque = 30;
         rigid.centerOfMass = new Vector3(0, -1, 0);
     }
-    // TODO : 앞뒤 바퀴가 바뀐거같은 추후 수정
+    
     void Update()
     {
-        wheelLB.motorTorque = maxTorque * Input.GetAxis("Vertical");
-        wheelRB.motorTorque = maxTorque * Input.GetAxis("Vertical");
         wheelLF.steerAngle = 15 * Input.GetAxis("Horizontal");
         wheelRF.steerAngle = 15 * Input.GetAxis("Horizontal");
+        wheelLB.motorTorque = maxTorque * Input.GetAxis("Vertical");
+        wheelRB.motorTorque = maxTorque * Input.GetAxis("Vertical");
 
-        wheelTransformLB.Rotate(wheelLF.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
+        wheelTransformLF.Rotate(wheelLF.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
         wheelTransformRF.Rotate(wheelRF.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
         wheelTransformLB.Rotate(wheelLB.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
-        wheelTransformRB.Rotate(wheelRB.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
+        wheelTransformRB.Rotate(-wheelRB.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
+
+        Move();
+    }
+
+	void Move()
+	{
+        if (Input.GetKey(KeyCode.UpArrow))
+            transform.Translate(-Vector3.forward * wheelLB.motorTorque * Time.deltaTime);
+        else if (Input.GetKey(KeyCode.DownArrow))
+            transform.Translate(Vector3.back * wheelRB.motorTorque * Time.deltaTime);
     }
 }
