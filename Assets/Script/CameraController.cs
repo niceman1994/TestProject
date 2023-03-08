@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    [SerializeField] private GameObject Car;
+	public GameObject cameraView;
+	public GameObject cameraPos;
+	public float speed;
 
-	private void FixedUpdate()
+	private void LateUpdate()
 	{
-		transform.position = new Vector3(Car.transform.position.x + 5.0f,
-			Car.transform.position.y + 1.0f, Car.transform.position.z);
+		gameObject.transform.position = Vector3.Lerp(transform.position, cameraPos.transform.position, Time.deltaTime * speed);
+		gameObject.transform.LookAt(cameraView.transform);
 	}
 }
