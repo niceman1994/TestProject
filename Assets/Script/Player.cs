@@ -19,10 +19,19 @@ public class Player : MonoBehaviour
 	public Transform wheelTransformRL;
 	public Transform wheelTransformRR;
 
-	public int maxTorque;
+	public float highestSpeed = 350.0f;
+	public float lowSpeedSteerAngle = 0.1f;
+	public float highSpeedStreerAngle = 35.0f;
+
+	public float decSpeed = 50.0f;
+
+	public float currentSpeed;
+	public float maxSpeed = 350.0f;
+	public float maxRevSpeed = 100.0f;
+
+	public int maxTorque = 10;
 
 	private float prevSteerAngle;
-	private float Speed;
 	private Rigidbody rigid;
 
 	private void Awake()
@@ -32,93 +41,72 @@ public class Player : MonoBehaviour
 
 	void Start()
 	{
-		maxTorque = 30;
-		Speed = 50.0f;
 		rigid.centerOfMass = new Vector3(0, -1, 0); // 무게중심이 높으면 차가 쉽게 전복된다
 	}
 
 	void FixedUpdate()
 	{
-		Move();
+		Control();
+		//Drift();
 	}
 
 	void Update()
 	{
-		WheelRotate();
+		tireTransformFL.Rotate(Vector3.up, colliderFL.steerAngle - prevSteerAngle, Space.World);
+		tireTransformFR.Rotate(Vector3.up, colliderFR.steerAngle - prevSteerAngle, Space.World);
 		prevSteerAngle = colliderFR.steerAngle;
 	}
 
-	void Move()
+	void Control()
 	{
-		colliderRR.motorTorque = -maxTorque * Input.GetAxis("Vertical") * Speed;
-		colliderRL.motorTorque = -maxTorque * Input.GetAxis("Vertical") * Speed;
+		currentSpeed = 2 * 3.14f * colliderRL.radius * colliderRL.rpm * 60 / 1000;
+		currentSpeed += Mathf.Round(currentSpeed);
 
-		colliderFR.steerAngle = 17 * Input.GetAxis("Horizontal");
-		colliderFL.steerAngle = 17 * Input.GetAxis("Horizontal");
+		if (currentSpeed <= 0 && currentSpeed > -maxSpeed)
+		{
+			colliderRR.motorTorque = -maxTorque * Input.GetAxis("Vertical") * 3;
+			colliderRL.motorTorque = -maxTorque * Input.GetAxis("Vertical") * 3;
+		}
+		else if (currentSpeed >= 0 && currentSpeed < maxRevSpeed)
+		{
+			colliderRR.motorTorque = -maxTorque * Input.GetAxis("Vertical") * 3;
+			colliderRL.motorTorque = -maxTorque * Input.GetAxis("Vertical") * 3;
+		}
+		else
+		{
+			colliderRR.motorTorque = 0;
+			colliderRL.motorTorque = 0;
+		}
 
-		wheelTransformFL.Rotate(-colliderFL.rpm / 60 * 360 * Time.deltaTime, 0, 0);
-		wheelTransformFR.Rotate(colliderFR.rpm / 60 * 360 * Time.deltaTime, 0, 0);
-		wheelTransformRL.Rotate(-colliderRL.rpm / 60 * 360 * Time.deltaTime, 0, 0);
-		wheelTransformRR.Rotate(colliderRR.rpm / 60 * 360 * Time.deltaTime, 0, 0);
+		if (!Input.GetButton("Vertical"))
+		{
+			colliderRR.brakeTorque = decSpeed;
+			colliderRL.brakeTorque = decSpeed;
+		}
+		else
+		{
+			colliderRR.brakeTorque = 0;
+			colliderRL.brakeTorque = 0;
+		}
+		
+		float speedFactor = rigid.velocity.magnitude / highestSpeed;
+		float steerAngle = Mathf.Lerp(lowSpeedSteerAngle, highSpeedStreerAngle, 1 / speedFactor);
+		steerAngle *= Input.GetAxis("Horizontal");
+
+		colliderFR.steerAngle = steerAngle;
+		colliderFL.steerAngle = steerAngle;
+		
+		wheelTransformFL.Rotate(colliderFL.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
+		wheelTransformRL.Rotate(colliderRL.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
+		wheelTransformFR.Rotate(colliderFR.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
+		wheelTransformRR.Rotate(colliderRR.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
 	}
 
-	void WheelRotate()
+	void Drift()
 	{
-		if (Input.GetKey(KeyCode.LeftArrow))
-			tireTransformFL.Rotate(Vector3.up, colliderFL.steerAngle - prevSteerAngle, Space.World);
-		else if (Input.GetKeyDown(KeyCode.RightArrow))
-			tireTransformFR.Rotate(Vector3.up, colliderFR.steerAngle - prevSteerAngle, Space.World);
+		if (Input.GetKey(KeyCode.LeftShift))
+		{
+			
+		}
 	}
 }
-
-//public class Player : MonoBehaviour
-//{
-//    public WheelCollider wheelLF;
-//    public WheelCollider wheelRF;
-//    public WheelCollider wheelLB;
-//    public WheelCollider wheelRB;
-//
-//    public Transform wheelTransformLF;
-//    public Transform wheelTransformRF;
-//    public Transform wheelTransformLB;
-//    public Transform wheelTransformRB;
-//
-//    public int maxTorque;
-//
-//    Rigidbody rigid;
-//    float Speed;
-//
-//    private void Awake()
-//    {
-//        rigid = GetComponent<Rigidbody>();
-//    }
-//
-//    void Start()
-//    {
-//        maxTorque = 30;
-//        rigid.centerOfMass = new Vector3(0, -1, 0);
-//    }
-//    
-//    void Update()
-//    {
-//        wheelLF.steerAngle = 15 * Input.GetAxis("Horizontal");
-//        wheelRF.steerAngle = 15 * Input.GetAxis("Horizontal");
-//        wheelLB.motorTorque = maxTorque * Input.GetAxis("Vertical");
-//        wheelRB.motorTorque = maxTorque * Input.GetAxis("Vertical");
-//
-//        wheelTransformLF.Rotate(wheelLF.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
-//        wheelTransformRF.Rotate(wheelRF.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
-//        wheelTransformLB.Rotate(wheelLB.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
-//        wheelTransformRB.Rotate(-wheelRB.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
-//
-//        Move();
-//    }
-//
-//	void Move()
-//	{
-//        if (Input.GetKey(KeyCode.UpArrow))
-//            wheelLB.attachedRigidbody.position += Vector3.forward * wheelLB.motorTorque * Time.deltaTime;
-//        else if (Input.GetKey(KeyCode.DownArrow))
-//            wheelLB.attachedRigidbody.position += Vector3.back * wheelRB.motorTorque * Time.deltaTime;
-//    }
-//}
