@@ -2,8 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class PlayerCar : MonoBehaviour
 {
+	[SerializeField] private GameObject LeftBackLight;
+	[SerializeField] private GameObject RightBackLight;
+
 	public Transform tireTransformFL;
 	public Transform tireTransformFR;
 	public Transform tireTransformRL;
@@ -34,6 +37,11 @@ public class Player : MonoBehaviour
 	private float prevSteerAngle;
 	private Rigidbody rigid;
 
+	WheelFrictionCurve ForRRwheel;
+	WheelFrictionCurve SideRRwheel;
+	WheelFrictionCurve ForRLwheel;
+	WheelFrictionCurve SideRLwheel;
+
 	private void Awake()
 	{
 		rigid = GetComponent<Rigidbody>();
@@ -42,12 +50,15 @@ public class Player : MonoBehaviour
 	void Start()
 	{
 		rigid.centerOfMass = new Vector3(0, -1, 0); // 무게중심이 높으면 차가 쉽게 전복된다
+		ForRRwheel = colliderRR.forwardFriction;
+		SideRRwheel = colliderRR.sidewaysFriction;
+		ForRLwheel = colliderRL.forwardFriction;
+		SideRLwheel = colliderRL.sidewaysFriction;
 	}
 
 	void FixedUpdate()
 	{
 		Control();
-		//Drift();
 	}
 
 	void Update()
@@ -55,6 +66,21 @@ public class Player : MonoBehaviour
 		tireTransformFL.Rotate(Vector3.up, colliderFL.steerAngle - prevSteerAngle, Space.World);
 		tireTransformFR.Rotate(Vector3.up, colliderFR.steerAngle - prevSteerAngle, Space.World);
 		prevSteerAngle = colliderFR.steerAngle;
+		BackLightOnOff();
+	}
+
+	void BackLightOnOff()
+	{
+		if (Input.GetKey(KeyCode.DownArrow) || currentSpeed == 0)
+		{
+			LeftBackLight.SetActive(true);
+			RightBackLight.SetActive(true);
+		}
+		else if (!Input.GetKey(KeyCode.DownArrow) || currentSpeed != 0)
+		{
+			LeftBackLight.SetActive(false);
+			RightBackLight.SetActive(false);
+		}
 	}
 
 	void Control()
@@ -88,13 +114,8 @@ public class Player : MonoBehaviour
 			colliderRR.brakeTorque = 0;
 			colliderRL.brakeTorque = 0;
 		}
-		
-		float speedFactor = rigid.velocity.magnitude / highestSpeed;
-		float steerAngle = Mathf.Lerp(lowSpeedSteerAngle, highSpeedStreerAngle, 1 / speedFactor);
-		steerAngle *= Input.GetAxis("Horizontal");
 
-		colliderFR.steerAngle = steerAngle;
-		colliderFL.steerAngle = steerAngle;
+		StartCoroutine(FixAngle());
 		
 		wheelTransformFL.Rotate(colliderFL.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
 		wheelTransformRL.Rotate(colliderRL.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
@@ -102,11 +123,48 @@ public class Player : MonoBehaviour
 		wheelTransformRR.Rotate(colliderRR.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
 	}
 
-	void Drift()
+	IEnumerator FixAngle()
 	{
+		yield return null;
+
+		float speedFactor = rigid.velocity.magnitude / highestSpeed;
+		float steerAngle = Mathf.Lerp(lowSpeedSteerAngle, highSpeedStreerAngle, 1 / speedFactor);
+		steerAngle *= Input.GetAxis("Horizontal");
+		// TODO : 드리프트 추후 수정
 		if (Input.GetKey(KeyCode.LeftShift))
 		{
-			
+			ForRRwheel.stiffness = 0.8f;
+			colliderRR.forwardFriction = ForRRwheel;
+
+			SideRRwheel.stiffness = 0.8f;
+			colliderRR.sidewaysFriction = SideRRwheel;
+
+			ForRLwheel.stiffness = 0.8f;
+			colliderRL.forwardFriction = ForRLwheel;
+
+			SideRLwheel.stiffness = 0.8f;
+			colliderRL.sidewaysFriction = SideRLwheel;
+
+			if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))
+				currentSpeed -= 10.0f;
 		}
+		
+		if (Input.GetKeyUp(KeyCode.LeftShift))
+		{
+			ForRRwheel.stiffness = 1.0f;
+			colliderRR.forwardFriction = ForRRwheel;
+
+			SideRRwheel.stiffness = 1.0f;
+			colliderRR.sidewaysFriction = SideRRwheel;
+
+			ForRLwheel.stiffness = 1.0f;
+			colliderRL.forwardFriction = ForRLwheel;
+
+			SideRLwheel.stiffness = 1.0f;
+			colliderRL.sidewaysFriction = SideRLwheel;
+		}
+
+		colliderFR.steerAngle = steerAngle;
+		colliderFL.steerAngle = steerAngle;
 	}
 }
