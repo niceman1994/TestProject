@@ -60,17 +60,17 @@ public class Player : MonoBehaviour
 	void Control()
 	{
 		currentSpeed = 2 * 3.14f * colliderRL.radius * colliderRL.rpm * 60 / 1000;
-		currentSpeed += Mathf.Round(currentSpeed);
+		currentSpeed = Mathf.Round(currentSpeed);
 
 		if (currentSpeed <= 0 && currentSpeed > -maxSpeed)
 		{
-			colliderRR.motorTorque = -maxTorque * Input.GetAxis("Vertical") * 3;
-			colliderRL.motorTorque = -maxTorque * Input.GetAxis("Vertical") * 3;
+			colliderRR.motorTorque = -maxTorque * Input.GetAxis("Vertical") * 5;
+			colliderRL.motorTorque = -maxTorque * Input.GetAxis("Vertical") * 5;
 		}
 		else if (currentSpeed >= 0 && currentSpeed < maxRevSpeed)
 		{
-			colliderRR.motorTorque = -maxTorque * Input.GetAxis("Vertical") * 3;
-			colliderRL.motorTorque = -maxTorque * Input.GetAxis("Vertical") * 3;
+			colliderRR.motorTorque = -maxTorque * Input.GetAxis("Vertical") * 5;
+			colliderRL.motorTorque = -maxTorque * Input.GetAxis("Vertical") * 5;
 		}
 		else
 		{

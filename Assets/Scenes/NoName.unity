@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4465782, g: 0.49641252, b: 0.5748167, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -18909,11 +18909,11 @@ MonoBehaviour:
   highestSpeed: 350
   lowSpeedSteerAngle: 0.1
   highSpeedStreerAngle: 25
-  decSpeed: 1000
+  decSpeed: 1200
   currentSpeed: 0
-  maxSpeed: 350
+  maxSpeed: 300
   maxRevSpeed: 100
-  maxTorque: 30
+  maxTorque: 50
 --- !u!65 &7563879267265136206
 BoxCollider:
   m_ObjectHideFlags: 0
