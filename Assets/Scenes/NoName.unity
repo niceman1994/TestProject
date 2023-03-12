@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4465782, g: 0.49641252, b: 0.5748167, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -5002,7 +5002,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4a78d7565abb16f4e8558be3f05037c0, type: 2}
+  - {fileID: 2100000, guid: 11725149a026cc640bd44d5812d64d51, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5099,7 +5099,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4a78d7565abb16f4e8558be3f05037c0, type: 2}
+  - {fileID: 2100000, guid: 11725149a026cc640bd44d5812d64d51, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5352,7 +5352,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4a78d7565abb16f4e8558be3f05037c0, type: 2}
+  - {fileID: 2100000, guid: 11725149a026cc640bd44d5812d64d51, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5564,7 +5564,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4a78d7565abb16f4e8558be3f05037c0, type: 2}
+  - {fileID: 2100000, guid: 11725149a026cc640bd44d5812d64d51, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5732,7 +5732,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4a78d7565abb16f4e8558be3f05037c0, type: 2}
+  - {fileID: 2100000, guid: 11725149a026cc640bd44d5812d64d51, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5829,7 +5829,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4a78d7565abb16f4e8558be3f05037c0, type: 2}
+  - {fileID: 2100000, guid: 11725149a026cc640bd44d5812d64d51, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5927,7 +5927,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4a78d7565abb16f4e8558be3f05037c0, type: 2}
+  - {fileID: 2100000, guid: 11725149a026cc640bd44d5812d64d51, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -6086,7 +6086,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4a78d7565abb16f4e8558be3f05037c0, type: 2}
+  - {fileID: 2100000, guid: 11725149a026cc640bd44d5812d64d51, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -34484,8 +34484,8 @@ Rigidbody:
   m_GameObject: {fileID: 7533187771804919591}
   serializedVersion: 2
   m_Mass: 350
-  m_Drag: 0.02
-  m_AngularDrag: 0.5
+  m_Drag: 0
+  m_AngularDrag: 0
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -34518,8 +34518,8 @@ MonoBehaviour:
   wheelTransformRL: {fileID: 7538840242358757063}
   wheelTransformRR: {fileID: 7538958104128734395}
   highestSpeed: 100
-  lowSpeedSteerAngle: 5
-  highSpeedStreerAngle: 7
+  lowSpeedSteerAngle: 3
+  highSpeedStreerAngle: 5
   decSpeed: 1200
   currentSpeed: 0
   maxSpeed: 200
