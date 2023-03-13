@@ -37,6 +37,11 @@ public class PlayerCar : MonoBehaviour
 	private float prevSteerAngle;
 	private Rigidbody rigid;
 
+	WheelFrictionCurve ForRRwheel;
+	WheelFrictionCurve SideRRwheel;
+	WheelFrictionCurve ForRLwheel;
+	WheelFrictionCurve SideRLwheel;
+
 	private void Awake()
 	{
 		rigid = GetComponent<Rigidbody>();
@@ -45,6 +50,10 @@ public class PlayerCar : MonoBehaviour
 	void Start()
 	{
 		rigid.centerOfMass = new Vector3(0, -1, 0); // 무게중심이 높으면 차가 쉽게 전복된다
+		ForRRwheel = colliderRR.forwardFriction;
+		SideRRwheel = colliderRR.sidewaysFriction;
+		ForRLwheel = colliderRL.forwardFriction;
+		SideRLwheel = colliderRL.sidewaysFriction;
 	}
 
 	void FixedUpdate()
@@ -58,19 +67,30 @@ public class PlayerCar : MonoBehaviour
 		tireTransformFR.Rotate(Vector3.up, colliderFR.steerAngle - prevSteerAngle, Space.World);
 		prevSteerAngle = colliderFR.steerAngle;
 		BackLightOnOff();
+		ResetCar();
 	}
 
 	void BackLightOnOff()
 	{
-		if (Input.GetKey(KeyCode.DownArrow) || currentSpeed == 0)
+		if (currentSpeed == 0)
 		{
 			LeftBackLight.SetActive(true);
 			RightBackLight.SetActive(true);
 		}
-		else if (!Input.GetKey(KeyCode.DownArrow) || currentSpeed != 0)
+		else
 		{
 			LeftBackLight.SetActive(false);
 			RightBackLight.SetActive(false);
+		}
+	}
+
+	void ResetCar()
+	{
+		if (Input.GetKeyDown(KeyCode.R))
+		{
+			transform.position = new Vector3(transform.position.x, transform.position.y + 1.0f, transform.position.z);
+			colliderRR.motorTorque = 0;
+			colliderRL.motorTorque = 0;
 		}
 	}
 
@@ -108,54 +128,66 @@ public class PlayerCar : MonoBehaviour
 
 		float speedFactor = rigid.velocity.magnitude / highestSpeed;
 		float steerAngle = Mathf.Lerp(lowSpeedSteerAngle, highSpeedStreerAngle, 1 / speedFactor);
+		//float steerAngle = Mathf.Lerp(lowSpeedSteerAngle, highSpeedStreerAngle, 1.0f);
 		steerAngle *= Input.GetAxis("Horizontal");
 
+		colliderFR.steerAngle = steerAngle;
+		colliderFL.steerAngle = steerAngle;
+
+		Drift();
+		WheelRotate();
+	}
+
+	void Drift()
+	{
 		if (Input.GetKey(KeyCode.LeftShift))
 		{
-			Drift(steerAngle);
+			SideRRwheel.stiffness = 1.0f;
+			colliderRR.sidewaysFriction = SideRRwheel;
 
-			if (Input.GetKeyUp(KeyCode.LeftShift))
-				transform.Rotate(Vector3.zero);
+			SideRLwheel.stiffness = 1.0f;
+			colliderRL.sidewaysFriction = SideRLwheel;
+
+			if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
+			{
+				//colliderRR.attachedRigidbody.MoveRotation(Quaternion.Euler(0.0f, angle, 0.0f));
+				//colliderRL.attachedRigidbody.MoveRotation(Quaternion.Euler(0.0f, angle, 0.0f));
+			}
+
+			if (Input.GetKeyUp(KeyCode.LeftArrow))
+			{
+				wheelTransformFL.Rotate(wheelTransformFL.rotation.x, 0.0f, wheelTransformFL.rotation.z);
+				wheelTransformFR.Rotate(wheelTransformFL.rotation.x, 0.0f, wheelTransformFL.rotation.z);
+			}
+
+			if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
+			{
+				//colliderRR.attachedArticulationBody.parentAnchorRotation = Quaternion.Euler(0.0f, prevSteerAngle, 0.0f);
+				//colliderRL.attachedArticulationBody.parentAnchorRotation = Quaternion.Euler(0.0f, prevSteerAngle, 0.0f);
+			}
+
+			if (Input.GetKeyUp(KeyCode.RightArrow))
+			{
+				wheelTransformFL.Rotate(wheelTransformFL.rotation.x, 0.0f, wheelTransformFL.rotation.z);
+				wheelTransformFR.Rotate(wheelTransformFL.rotation.x, 0.0f, wheelTransformFL.rotation.z);
+			}
 		}
-		else
-			WheelRotate(steerAngle);
+
+		if (Input.GetKeyUp(KeyCode.LeftShift))
+		{
+			SideRRwheel.stiffness = 1.25f;
+			colliderRR.sidewaysFriction = SideRRwheel;
+
+			SideRLwheel.stiffness = 1.25f;
+			colliderRL.sidewaysFriction = SideRLwheel;
+		}
 	}
-	// TODO : 추후 수정
-	void WheelRotate(float angle)
-    {
-		if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
-		{
-			wheelTransformFL.Rotate(colliderFL.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
-			wheelTransformRL.Rotate(colliderRL.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
-			transform.Rotate(Vector3.up * Time.fixedDeltaTime * angle);
-			colliderFL.steerAngle = angle;
-		}
 
-		if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
-		{
-			wheelTransformFR.Rotate(colliderFR.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
-			wheelTransformRR.Rotate(colliderRR.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
-			transform.Rotate(Vector3.up * Time.fixedDeltaTime * angle);
-			colliderFR.steerAngle = angle;
-		}
-	}
-
-	void Drift(float angle)
-    {
-		if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
-		{
-			wheelTransformFL.Rotate(colliderFL.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
-			wheelTransformRL.Rotate(colliderRL.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
-			colliderFL.steerAngle = angle;
-			transform.Rotate(Vector3.up * Time.fixedDeltaTime * angle * 3);
-		}
-
-		if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
-		{
-			wheelTransformFR.Rotate(colliderFR.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
-			wheelTransformRR.Rotate(colliderRR.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
-			colliderFR.steerAngle = angle;
-			transform.Rotate(Vector3.up * Time.fixedDeltaTime * angle * 3);
-		}
+	void WheelRotate()
+	{
+		wheelTransformFL.Rotate(colliderFL.rpm / 180 * 360 * Time.fixedDeltaTime, 0, 0);
+		wheelTransformFR.Rotate(colliderFR.rpm / 180 * 360 * Time.fixedDeltaTime, 0, 0);
+		wheelTransformRL.Rotate(colliderRL.rpm / 180 * 360 * Time.fixedDeltaTime, 0, 0);
+		wheelTransformRR.Rotate(colliderRR.rpm / 180 * 360 * Time.fixedDeltaTime, 0, 0);
 	}
 }
