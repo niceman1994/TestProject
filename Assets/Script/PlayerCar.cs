@@ -24,7 +24,7 @@ public class PlayerCar : MonoBehaviour
 
 	public float highestSpeed = 350.0f;
 	public float lowSpeedSteerAngle = 0.1f;
-	public float highSpeedStreerAngle = 35.0f;
+	public float highSpeedSteerAngle = 35.0f;
 
 	public float decSpeed = 50.0f;
 
@@ -126,22 +126,25 @@ public class PlayerCar : MonoBehaviour
 			colliderRL.brakeTorque = 0;
 		}
 
-		float speedFactor = rigid.velocity.magnitude / highestSpeed;
-		float steerAngle = Mathf.Lerp(lowSpeedSteerAngle, highSpeedStreerAngle, 1 / speedFactor);
+		//float speedFactor = rigid.velocity.magnitude / highestSpeed;
+		//float steerAngle = Mathf.Lerp(lowSpeedSteerAngle, highSpeedStreerAngle, 1 / speedFactor);
 		//float steerAngle = Mathf.Lerp(lowSpeedSteerAngle, highSpeedStreerAngle, 1.0f);
-		steerAngle *= Input.GetAxis("Horizontal");
+		//steerAngle *= Input.GetAxis("Horizontal");
 
-		colliderFR.steerAngle = steerAngle;
-		colliderFL.steerAngle = steerAngle;
+		colliderFR.steerAngle = Input.GetAxis("Horizontal") * highSpeedSteerAngle;
+		colliderFL.steerAngle = Input.GetAxis("Horizontal") * highSpeedSteerAngle;
 
 		Drift();
 		WheelRotate();
 	}
-
+	// TODO : 언제 할 수 있을지는 모르겠지만 추후 수정
 	void Drift()
 	{
 		if (Input.GetKey(KeyCode.LeftShift))
 		{
+			float decreaseSpeed = currentSpeed * 0.2f;
+			currentSpeed -= decreaseSpeed;
+
 			SideRRwheel.stiffness = 1.0f;
 			colliderRR.sidewaysFriction = SideRRwheel;
 
@@ -156,26 +159,42 @@ public class PlayerCar : MonoBehaviour
 
 			if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
 			{
-				//colliderRR.attachedRigidbody.MoveRotation(Quaternion.Euler(0.0f, angle, 0.0f));
-				//colliderRL.attachedRigidbody.MoveRotation(Quaternion.Euler(0.0f, angle, 0.0f));
+				colliderFR.steerAngle += Input.GetAxis("Horizontal") * (highSpeedSteerAngle + 30.0f);
+				colliderFL.steerAngle += Input.GetAxis("Horizontal") * (highSpeedSteerAngle + 30.0f);
+			}
+			else if (Input.GetKey(KeyCode.LeftArrow) == true)
+			{
+				if (Input.GetKey(KeyCode.RightArrow))
+				{
+					colliderFR.steerAngle = Input.GetAxis("Horizontal") * 0.0f;
+					colliderFL.steerAngle = Input.GetAxis("Horizontal") * 0.0f;
+				}
 			}
 
 			if (Input.GetKeyUp(KeyCode.LeftArrow))
 			{
-				wheelTransformFL.Rotate(wheelTransformFL.rotation.x, 0.0f, wheelTransformFL.rotation.z);
-				wheelTransformFR.Rotate(wheelTransformFL.rotation.x, 0.0f, wheelTransformFL.rotation.z);
+				colliderFR.steerAngle = 0.0f;
+				colliderFL.steerAngle = 0.0f;
 			}
 
 			if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
 			{
-				//colliderRR.attachedArticulationBody.parentAnchorRotation = Quaternion.Euler(0.0f, prevSteerAngle, 0.0f);
-				//colliderRL.attachedArticulationBody.parentAnchorRotation = Quaternion.Euler(0.0f, prevSteerAngle, 0.0f);
+				colliderFR.steerAngle += Input.GetAxis("Horizontal") * (highSpeedSteerAngle + 30.0f);
+				colliderFL.steerAngle += Input.GetAxis("Horizontal") * (highSpeedSteerAngle + 30.0f);
+			}
+			else if (Input.GetKey(KeyCode.RightArrow) == true)
+			{
+				if (Input.GetKey(KeyCode.LeftArrow))
+				{
+					colliderFR.steerAngle = Input.GetAxis("Horizontal") * 0.0f;
+					colliderFL.steerAngle = Input.GetAxis("Horizontal") * 0.0f;
+				}
 			}
 
 			if (Input.GetKeyUp(KeyCode.RightArrow))
 			{
-				wheelTransformFL.Rotate(wheelTransformFL.rotation.x, 0.0f, wheelTransformFL.rotation.z);
-				wheelTransformFR.Rotate(wheelTransformFL.rotation.x, 0.0f, wheelTransformFL.rotation.z);
+				colliderFR.steerAngle = 0.0f;
+				colliderFL.steerAngle = 0.0f;
 			}
 		}
 

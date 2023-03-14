@@ -4,28 +4,24 @@ using UnityEngine;
 
 public class CarCamera : MonoBehaviour
 {
-	[SerializeField] private GameObject[] Camera = new GameObject[2];
-	[SerializeField] private GameObject cameraView;
+	[SerializeField] private Vector3 Direction;
 
-	private void Update()
+	private void Start()
 	{
-		ViewConversion();
+		Direction = transform.position - GameManager.Instance.Car.transform.position;
 	}
 
-	void ViewConversion()
+	private void FixedUpdate()
 	{
-		if (Input.GetKeyDown(KeyCode.V))
-		{
-			if (Camera[0].activeInHierarchy == true)
-			{
-				Camera[0].SetActive(false);
-				Camera[1].SetActive(true);
-			}
-			else if (Camera[1].activeInHierarchy == true)
-			{
-				Camera[1].SetActive(false);
-				Camera[0].SetActive(true);
-			}
-		}
+		CameraPos();
+	}
+	// TODO : 각도 추후 수정
+	void CameraPos()
+	{
+		transform.position = GameManager.Instance.Car.transform.position + Direction;
+
+		if (GameManager.Instance.Car.transform.rotation.y >= GameManager.Instance.Car.transform.rotation.y - 75.0f &&
+			GameManager.Instance.Car.transform.rotation.y <= GameManager.Instance.Car.transform.rotation.y + 75.0f)
+			transform.LookAt(GameManager.Instance.Car.transform.position, Vector3.up);
 	}
 }
