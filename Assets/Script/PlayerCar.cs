@@ -145,8 +145,14 @@ public class PlayerCar : MonoBehaviour
 			SideRRwheel.stiffness = 1.0f;
 			colliderRR.sidewaysFriction = SideRRwheel;
 
+			ForRRwheel.stiffness = 1.0f;
+			colliderRR.forwardFriction = ForRRwheel;
+
 			SideRLwheel.stiffness = 1.0f;
 			colliderRL.sidewaysFriction = SideRLwheel;
+
+			ForRLwheel.stiffness = 1.0f;
+			colliderRL.forwardFriction = ForRLwheel;
 
 			if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
 			{
@@ -175,11 +181,17 @@ public class PlayerCar : MonoBehaviour
 
 		if (Input.GetKeyUp(KeyCode.LeftShift))
 		{
-			SideRRwheel.stiffness = 1.25f;
+			SideRRwheel.stiffness = 1.0f;
 			colliderRR.sidewaysFriction = SideRRwheel;
 
-			SideRLwheel.stiffness = 1.25f;
+			ForRRwheel.stiffness = 1.0f;
+			colliderRR.forwardFriction = ForRRwheel;
+
+			SideRLwheel.stiffness = 1.0f;
 			colliderRL.sidewaysFriction = SideRLwheel;
+
+			ForRLwheel.stiffness = 1.0f;
+			colliderRL.forwardFriction = ForRLwheel;
 		}
 	}
 

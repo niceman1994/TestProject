@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028328, g: 0.22571322, b: 0.30692163, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -5248,7 +5248,7 @@ WheelCollider:
   m_SuspensionSpring:
     spring: 0
     damper: 0
-    targetPosition: 1
+    targetPosition: 0.5
   m_SuspensionDistance: 0.025
   m_ForceAppPointDistance: 0
   m_Mass: 40
@@ -6151,7 +6151,7 @@ WheelCollider:
   m_SuspensionSpring:
     spring: 0
     damper: 0
-    targetPosition: 1
+    targetPosition: 0.5
   m_SuspensionDistance: 0.025
   m_ForceAppPointDistance: 0
   m_Mass: 40
@@ -6310,7 +6310,7 @@ WheelCollider:
   m_SuspensionSpring:
     spring: 0
     damper: 0
-    targetPosition: 1
+    targetPosition: 0.5
   m_SuspensionDistance: 0.025
   m_ForceAppPointDistance: 0
   m_Mass: 40
@@ -6372,7 +6372,7 @@ WheelCollider:
   m_SuspensionSpring:
     spring: 0
     damper: 0
-    targetPosition: 1
+    targetPosition: 0.5
   m_SuspensionDistance: 0.025
   m_ForceAppPointDistance: 0
   m_Mass: 40
@@ -24579,7 +24579,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: c73c82cc5b816834c8cd898a5bc4c7ce, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f7c1d3fd118b1de42b346afab5ed5971, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -34135,7 +34135,7 @@ GameObject:
   - component: {fileID: 7563879267265136204}
   - component: {fileID: 7563879267265136205}
   - component: {fileID: 7563879267265136208}
-  - component: {fileID: 7563879267265136207}
+  - component: {fileID: 7563879267265136209}
   m_Layer: 0
   m_Name: Car_1
   m_TagString: Untagged
@@ -34602,14 +34602,30 @@ MonoBehaviour:
   wheelTransformRL: {fileID: 7538840242358757063}
   wheelTransformRR: {fileID: 7538958104128734395}
   highestSpeed: 100
-  lowSpeedSteerAngle: 10
-  highSpeedStreerAngle: 15
-  decSpeed: 1000
+  lowSpeedSteerAngle: 5
+  highSpeedStreerAngle: 10
+  decSpeed: 900
   currentSpeed: 0
   maxSpeed: 200
   maxRevSpeed: 75
   maxTorque: 40
---- !u!64 &7563879267265136207
+--- !u!114 &7563879267265136208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7533187771804919591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0e4219327c8d1b40ad3f7e7ed807512, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Camera:
+  - {fileID: 522378192}
+  - {fileID: 17164084}
+  cameraView: {fileID: 1992683446}
+--- !u!64 &7563879267265136209
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -34623,22 +34639,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300010, guid: 6df8799e47834944c85abaf3e659049d, type: 3}
---- !u!114 &7563879267265136208
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7533187771804919591}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a0e4219327c8d1b40ad3f7e7ed807512, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  haveCamera:
-  - {fileID: 522378192}
-  - {fileID: 17164084}
-  cameraView: {fileID: 1992683446}
 --- !u!33 &7564525924897394957
 MeshFilter:
   m_ObjectHideFlags: 0

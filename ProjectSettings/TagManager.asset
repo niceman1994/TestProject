@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Car
+  - ResetDriftCollision
   layers:
   - Default
   - TransparentFX
@@ -13,13 +15,13 @@ TagManager:
   - UI
   - 
   - 
-  - PostProcessing
-  - Ground
-  - Environment
-  - Track
-  - CrashObject
-  - Kart
-  - TrainingCheckpoints
+  - Car
+  - Road
+  - BrakingGround
+  - Metal
+  - Rubber
+  - FinishZone
+  - 
   - 
   - 
   - 

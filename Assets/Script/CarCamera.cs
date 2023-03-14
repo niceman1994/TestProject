@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CarCamera : MonoBehaviour
 {
-	[SerializeField] private GameObject[] haveCamera = new GameObject[2];
+	[SerializeField] private GameObject[] Camera = new GameObject[2];
 	[SerializeField] private GameObject cameraView;
 
 	private void Update()
@@ -16,15 +16,15 @@ public class CarCamera : MonoBehaviour
 	{
 		if (Input.GetKeyDown(KeyCode.V))
 		{
-			if (haveCamera[0].activeInHierarchy == true)
+			if (Camera[0].activeInHierarchy == true)
 			{
-				haveCamera[0].SetActive(false);
-				haveCamera[1].SetActive(true);
+				Camera[0].SetActive(false);
+				Camera[1].SetActive(true);
 			}
-			else if (haveCamera[1].activeInHierarchy == true)
+			else if (Camera[1].activeInHierarchy == true)
 			{
-				haveCamera[1].SetActive(false);
-				haveCamera[0].SetActive(true);
+				Camera[1].SetActive(false);
+				Camera[0].SetActive(true);
 			}
 		}
 	}
