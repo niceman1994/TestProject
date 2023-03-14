@@ -122,8 +122,8 @@ public class PlayerCar : MonoBehaviour
 		}
 		else
 		{
-			colliderRR.brakeTorque = 0;
-			colliderRL.brakeTorque = 0;
+			colliderRR.brakeTorque = 0.0f;
+			colliderRL.brakeTorque = 0.0f;
 		}
 
 		//float speedFactor = rigid.velocity.magnitude / highestSpeed;
