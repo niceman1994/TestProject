@@ -5,18 +5,34 @@ using UnityEngine.UI;
 
 public class Speedometer : MonoBehaviour
 {
+    [SerializeField] private RectTransform Arrow;
+    [SerializeField] float MinArrowAngle = 0;
+    [SerializeField] float MaxArrowAngle = -315f;
     [SerializeField] private Text speedText;
-    float Speed;
 
     void Start()
     {
-        Speed = GameManager.Instance.Car.GetComponent<PlayerCar>().currentSpeed;
         speedText.text = "000";
     }
-    // TODO : 100미만의 속도에선 앞에 0이 나오도록 수정해야함
+    
     void Update()
     {
-        speedText.text = Mathf.Abs(Speed).ToString();
-       //speedText.text = Speed.ToString();
+        if (GameManager.Instance.Speed < 10.0f)
+            speedText.text = "00" + GameManager.Instance.Speed.ToString();
+        else if (GameManager.Instance.Speed < 100.0f)
+            speedText.text = "0" + GameManager.Instance.Speed.ToString();
+        else if (GameManager.Instance.Speed >= 100.0f && GameManager.Instance.Speed < 300.0f)
+            speedText.text = GameManager.Instance.Speed.ToString();
+
+        UpdateArrow();
+    }
+
+    void UpdateArrow()
+	{
+        var procent = GameManager.Instance.Speed / MaxArrowAngle;
+        var angle = (MaxArrowAngle - MinArrowAngle) * procent;
+
+        if (Arrow.rotation.y >= -315.0f && Arrow.rotation.y <= 0.0f)
+            Arrow.rotation = Quaternion.AngleAxis(-angle, Vector3.forward);
     }
 }

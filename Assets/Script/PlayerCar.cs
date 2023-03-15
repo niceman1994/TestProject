@@ -48,7 +48,7 @@ public class PlayerCar : MonoBehaviour
 
 	void Start()
 	{
-		rigid.centerOfMass = new Vector3(0, -1, 0); // 무게중심이 높으면 차가 쉽게 전복된다
+		rigid.centerOfMass = new Vector3(0, -1, 0);
 		ForRRwheel = colliderRR.forwardFriction;
 		SideRRwheel = colliderRR.sidewaysFriction;
 		ForRLwheel = colliderRL.forwardFriction;
@@ -96,7 +96,7 @@ public class PlayerCar : MonoBehaviour
 	void Control()
 	{
 		currentSpeed = 2 * 3.14f * colliderRL.radius * colliderRL.rpm * 60 / 1000;
-		currentSpeed = Mathf.Round(currentSpeed);
+		currentSpeed = currentSpeed <= 190.0f ? Mathf.Round(currentSpeed) : 190.0f;
 
 		if (currentSpeed <= 0 && currentSpeed > -maxSpeed)
 		{
@@ -127,7 +127,6 @@ public class PlayerCar : MonoBehaviour
 
 		//float speedFactor = rigid.velocity.magnitude / highestSpeed;
 		//float steerAngle = Mathf.Lerp(lowSpeedSteerAngle, highSpeedStreerAngle, 1 / speedFactor);
-		//float steerAngle = Mathf.Lerp(lowSpeedSteerAngle, highSpeedStreerAngle, 1.0f);
 		//steerAngle *= Input.GetAxis("Horizontal");
 
 		colliderFR.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
@@ -137,79 +136,38 @@ public class PlayerCar : MonoBehaviour
 		WheelRotate();
 	}
 	// TODO : 언제 할 수 있을지는 모르겠지만 추후 수정
-	void Drift()
+	IEnumerator Drift()
 	{
-		if (Input.GetKey(KeyCode.LeftShift))
+		yield return null;
+
+		if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
 		{
-			float decreaseSpeed = currentSpeed * 0.2f;
+			Vector3 driftAngle = new Vector3(0.0f, Input.GetAxis("Horizontal") * 15.0f, Input.GetAxis("Horizontal") * 1.0f);
+
+			colliderRR.brakeTorque = decSpeed;
+			colliderRL.brakeTorque = decSpeed;
+
+			float decreaseSpeed = Mathf.Round(currentSpeed * 0.2f);
 			currentSpeed = Mathf.Round(currentSpeed - decreaseSpeed);
 
-			SideRRwheel.stiffness = 1.0f;
-			colliderRR.sidewaysFriction = SideRRwheel;
-
-			ForRRwheel.stiffness = 1.0f;
-			colliderRR.forwardFriction = ForRRwheel;
-
-			SideRLwheel.stiffness = 1.0f;
-			colliderRL.sidewaysFriction = SideRLwheel;
-
-			ForRLwheel.stiffness = 1.0f;
-			colliderRL.forwardFriction = ForRLwheel;
-
-			if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
-			{
-				colliderFR.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
-				colliderFL.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
-			}
-			else if (Input.GetKey(KeyCode.LeftArrow) == true)
-			{
-				if (Input.GetKey(KeyCode.RightArrow))
-				{
-					colliderFR.steerAngle = Input.GetAxis("Horizontal") * 0.0f;
-					colliderFL.steerAngle = Input.GetAxis("Horizontal") * 0.0f;
-				}
-			}
-
-			if (Input.GetKeyUp(KeyCode.LeftArrow))
-			{
-				colliderFR.steerAngle = 0.0f;
-				colliderFL.steerAngle = 0.0f;
-			}
-
-			if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
-			{
-				colliderFR.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
-				colliderFL.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
-			}
-			else if (Input.GetKey(KeyCode.RightArrow) == true)
-			{
-				if (Input.GetKey(KeyCode.LeftArrow))
-				{
-					colliderFR.steerAngle = Input.GetAxis("Horizontal") * 0.0f;
-					colliderFL.steerAngle = Input.GetAxis("Horizontal") * 0.0f;
-				}
-			}
-
-			if (Input.GetKeyUp(KeyCode.RightArrow))
-			{
-				colliderFR.steerAngle = 0.0f;
-				colliderFL.steerAngle = 0.0f;
-			}
+			colliderFR.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
+			colliderFL.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
+			rigid.AddTorque(driftAngle, ForceMode.Acceleration);
 		}
 
-		if (Input.GetKeyUp(KeyCode.LeftShift))
+		if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
 		{
-			SideRRwheel.stiffness = 1.0f;
-			colliderRR.sidewaysFriction = SideRRwheel;
+			Vector3 driftAngle = new Vector3(0.0f, Input.GetAxis("Horizontal") * 15.0f, Input.GetAxis("Horizontal") * 1.0f);
 
-			ForRRwheel.stiffness = 1.0f;
-			colliderRR.forwardFriction = ForRRwheel;
+			colliderRR.brakeTorque = decSpeed;
+			colliderRL.brakeTorque = decSpeed;
 
-			SideRLwheel.stiffness = 1.0f;
-			colliderRL.sidewaysFriction = SideRLwheel;
+			float decreaseSpeed = Mathf.Round(currentSpeed * 0.2f);
+			currentSpeed = Mathf.Round(currentSpeed - decreaseSpeed);
 
-			ForRLwheel.stiffness = 1.0f;
-			colliderRL.forwardFriction = ForRLwheel;
+			colliderFR.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
+			colliderFL.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
+			rigid.AddTorque(driftAngle, ForceMode.Acceleration);
 		}
 	}
 
