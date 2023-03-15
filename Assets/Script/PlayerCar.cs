@@ -23,8 +23,7 @@ public class PlayerCar : MonoBehaviour
 	public Transform wheelTransformRR;
 
 	public float highestSpeed = 350.0f;
-	public float lowSpeedSteerAngle = 0.1f;
-	public float highSpeedSteerAngle = 35.0f;
+	public float SteerAngle = 30.0f;
 
 	public float decSpeed = 50.0f;
 
@@ -131,8 +130,8 @@ public class PlayerCar : MonoBehaviour
 		//float steerAngle = Mathf.Lerp(lowSpeedSteerAngle, highSpeedStreerAngle, 1.0f);
 		//steerAngle *= Input.GetAxis("Horizontal");
 
-		colliderFR.steerAngle = Input.GetAxis("Horizontal") * highSpeedSteerAngle;
-		colliderFL.steerAngle = Input.GetAxis("Horizontal") * highSpeedSteerAngle;
+		colliderFR.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
+		colliderFL.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
 
 		Drift();
 		WheelRotate();
@@ -143,7 +142,7 @@ public class PlayerCar : MonoBehaviour
 		if (Input.GetKey(KeyCode.LeftShift))
 		{
 			float decreaseSpeed = currentSpeed * 0.2f;
-			currentSpeed -= decreaseSpeed;
+			currentSpeed = Mathf.Round(currentSpeed - decreaseSpeed);
 
 			SideRRwheel.stiffness = 1.0f;
 			colliderRR.sidewaysFriction = SideRRwheel;
@@ -159,8 +158,8 @@ public class PlayerCar : MonoBehaviour
 
 			if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
 			{
-				colliderFR.steerAngle += Input.GetAxis("Horizontal") * (highSpeedSteerAngle + 30.0f);
-				colliderFL.steerAngle += Input.GetAxis("Horizontal") * (highSpeedSteerAngle + 30.0f);
+				colliderFR.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
+				colliderFL.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
 			}
 			else if (Input.GetKey(KeyCode.LeftArrow) == true)
 			{
@@ -179,8 +178,8 @@ public class PlayerCar : MonoBehaviour
 
 			if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
 			{
-				colliderFR.steerAngle += Input.GetAxis("Horizontal") * (highSpeedSteerAngle + 30.0f);
-				colliderFL.steerAngle += Input.GetAxis("Horizontal") * (highSpeedSteerAngle + 30.0f);
+				colliderFR.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
+				colliderFL.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
 			}
 			else if (Input.GetKey(KeyCode.RightArrow) == true)
 			{
