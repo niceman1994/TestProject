@@ -7,10 +7,10 @@ public class PlayerCar : MonoBehaviour
 	[SerializeField] private GameObject LeftBackLight;
 	[SerializeField] private GameObject RightBackLight;
 
-	public Transform tireTransformFL;
-	public Transform tireTransformFR;
-	public Transform tireTransformRL;
-	public Transform tireTransformRR;
+	//public Transform tireTransformFL;
+	//public Transform tireTransformFR;
+	//public Transform tireTransformRL;
+	//public Transform tireTransformRR;
 
 	public WheelCollider colliderFR;
 	public WheelCollider colliderFL;
@@ -22,24 +22,23 @@ public class PlayerCar : MonoBehaviour
 	public Transform wheelTransformRL;
 	public Transform wheelTransformRR;
 
-	public float highestSpeed = 350.0f;
-	public float SteerAngle = 30.0f;
-
-	public float decSpeed = 50.0f;
+	[SerializeField] private float SteerAngle = 30.0f;
+	[SerializeField] private float decSpeed = 50.0f;
 
 	public float currentSpeed;
-	public float maxSpeed = 350.0f;
-	public float maxRevSpeed = 100.0f;
+	[SerializeField] private float maxSpeed = 350.0f;
+	[SerializeField] private float maxRevSpeed = 100.0f;
 
-	public int maxTorque = 10;
+	[SerializeField] private int maxTorque = 10;
 
 	private float prevSteerAngle;
+	private float carSpeed;
 	private Rigidbody rigid;
 
-	WheelFrictionCurve ForRRwheel;
-	WheelFrictionCurve SideRRwheel;
-	WheelFrictionCurve ForRLwheel;
-	WheelFrictionCurve SideRLwheel;
+	WheelFrictionCurve ForFRwheel;
+	WheelFrictionCurve SideFRwheel;
+	WheelFrictionCurve ForFLwheel;
+	WheelFrictionCurve SideFLwheel;
 
 	private void Awake()
 	{
@@ -49,24 +48,27 @@ public class PlayerCar : MonoBehaviour
 	void Start()
 	{
 		rigid.centerOfMass = new Vector3(0, -1, 0);
-		ForRRwheel = colliderRR.forwardFriction;
-		SideRRwheel = colliderRR.sidewaysFriction;
-		ForRLwheel = colliderRL.forwardFriction;
-		SideRLwheel = colliderRL.sidewaysFriction;
+		carSpeed = 27.0f;
+
+		ForFRwheel = colliderFR.forwardFriction;
+		SideFRwheel = colliderFR.sidewaysFriction;
+		ForFLwheel = colliderFL.forwardFriction;
+		SideFLwheel = colliderFL.sidewaysFriction;
 	}
 
 	void FixedUpdate()
 	{
 		Control();
+		WheelPos();
 	}
 
 	void Update()
 	{
-		tireTransformFL.Rotate(Vector3.up, colliderFL.steerAngle - prevSteerAngle, Space.World);
-		tireTransformFR.Rotate(Vector3.up, colliderFR.steerAngle - prevSteerAngle, Space.World);
+		wheelTransformFL.Rotate(Vector3.up, colliderFL.steerAngle - prevSteerAngle, Space.World);
+		wheelTransformFR.Rotate(Vector3.up, colliderFR.steerAngle - prevSteerAngle, Space.World);
 		prevSteerAngle = colliderFR.steerAngle;
 		BackLightOnOff();
-		ResetCar();
+		wheelLock();
 	}
 
 	void BackLightOnOff()
@@ -76,37 +78,53 @@ public class PlayerCar : MonoBehaviour
 			LeftBackLight.SetActive(true);
 			RightBackLight.SetActive(true);
 		}
-		else
+		else if (Input.GetKey(KeyCode.DownArrow))
+		{
+			if (currentSpeed < 0 && currentSpeed >= -maxSpeed)
+			{
+				LeftBackLight.SetActive(true);
+				RightBackLight.SetActive(true);
+			}
+			else if (currentSpeed > 0 && currentSpeed <= maxRevSpeed)
+			{
+				LeftBackLight.SetActive(false);
+				RightBackLight.SetActive(false);
+			}
+		}
+		else if (Input.GetKey(KeyCode.UpArrow))
+		{
+			if (currentSpeed > 0 && currentSpeed <= maxRevSpeed)
+			{
+				LeftBackLight.SetActive(true);
+				RightBackLight.SetActive(true);
+			}
+			else if (currentSpeed < 0 && currentSpeed >= -maxSpeed)
+			{
+				LeftBackLight.SetActive(false);
+				RightBackLight.SetActive(false);
+			}
+		}
+		else if (currentSpeed != 0)
 		{
 			LeftBackLight.SetActive(false);
 			RightBackLight.SetActive(false);
 		}
 	}
 
-	void ResetCar()
-	{
-		if (Input.GetKeyDown(KeyCode.R))
-		{
-			transform.position = new Vector3(transform.position.x, transform.position.y + 1.0f, transform.position.z);
-			colliderRR.motorTorque = 0;
-			colliderRL.motorTorque = 0;
-		}
-	}
-
 	void Control()
 	{
 		currentSpeed = 2 * 3.14f * colliderRL.radius * colliderRL.rpm * 60 / 1000;
-		currentSpeed = currentSpeed <= 190.0f ? Mathf.Round(currentSpeed) : 190.0f;
+		currentSpeed = Mathf.Round(currentSpeed);
 
 		if (currentSpeed <= 0 && currentSpeed > -maxSpeed)
 		{
-			colliderRR.motorTorque = -maxTorque * Input.GetAxis("Vertical") * 5;
-			colliderRL.motorTorque = -maxTorque * Input.GetAxis("Vertical") * 5;
+			colliderRR.motorTorque = -maxTorque * Input.GetAxis("Vertical") * carSpeed;
+			colliderRL.motorTorque = -maxTorque * Input.GetAxis("Vertical") * carSpeed;
 		}
 		else if (currentSpeed >= 0 && currentSpeed < maxRevSpeed)
 		{
-			colliderRR.motorTorque = -maxTorque * Input.GetAxis("Vertical") * 5;
-			colliderRL.motorTorque = -maxTorque * Input.GetAxis("Vertical") * 5;
+			colliderRR.motorTorque = -maxTorque * Input.GetAxis("Vertical") * carSpeed;
+			colliderRL.motorTorque = -maxTorque * Input.GetAxis("Vertical") * carSpeed;
 		}
 		else
 		{
@@ -136,46 +154,65 @@ public class PlayerCar : MonoBehaviour
 		WheelRotate();
 	}
 	// TODO : 언제 할 수 있을지는 모르겠지만 추후 수정
-	IEnumerator Drift()
+	void Drift()
 	{
-		yield return null;
-
-		if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
+		if (Input.GetKey(KeyCode.LeftShift))
 		{
-			Vector3 driftAngle = new Vector3(0.0f, Input.GetAxis("Horizontal") * 15.0f, Input.GetAxis("Horizontal") * 1.0f);
+			if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
+			{
+				colliderRR.brakeTorque = decSpeed - (decSpeed * 0.25f);
+				colliderRL.brakeTorque = decSpeed - (decSpeed * 0.25f);
 
-			colliderRR.brakeTorque = decSpeed;
-			colliderRL.brakeTorque = decSpeed;
+				transform.Rotate(Vector3.up, Input.GetAxis("Horizontal") * 90.0f * Time.deltaTime);
+			}
+			else if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
+			{
+				colliderRR.brakeTorque = decSpeed - (decSpeed * 0.25f);
+				colliderRL.brakeTorque = decSpeed - (decSpeed * 0.25f);
 
-			float decreaseSpeed = Mathf.Round(currentSpeed * 0.2f);
-			currentSpeed = Mathf.Round(currentSpeed - decreaseSpeed);
-
-			colliderFR.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
-			colliderFL.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
-			rigid.AddTorque(driftAngle, ForceMode.Acceleration);
+				transform.Rotate(Vector3.up, Input.GetAxis("Horizontal") * 90.0f * Time.deltaTime);
+			}
 		}
-
-		if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
+		else
 		{
-			Vector3 driftAngle = new Vector3(0.0f, Input.GetAxis("Horizontal") * 15.0f, Input.GetAxis("Horizontal") * 1.0f);
-
-			colliderRR.brakeTorque = decSpeed;
-			colliderRL.brakeTorque = decSpeed;
-
-			float decreaseSpeed = Mathf.Round(currentSpeed * 0.2f);
-			currentSpeed = Mathf.Round(currentSpeed - decreaseSpeed);
-
-			colliderFR.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
-			colliderFL.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
-			rigid.AddTorque(driftAngle, ForceMode.Acceleration);
+			if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
+			{
+				colliderRR.brakeTorque = decSpeed * 0.1f;
+				colliderRL.brakeTorque = decSpeed * 0.1f;
+			}
+			else if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
+			{
+				colliderRR.brakeTorque = decSpeed * 0.1f;
+				colliderRL.brakeTorque = decSpeed * 0.1f;
+			}
 		}
+	}
+
+	void wheelLock()
+	{
+		if (wheelTransformFL.rotation.z != 0)
+			wheelTransformFL.rotation = Quaternion.Euler(wheelTransformFL.rotation.x, wheelTransformFL.rotation.y, 0.0f);
+
+		if (wheelTransformFR.rotation.z != 0)
+			wheelTransformFR.rotation = Quaternion.Euler(wheelTransformFR.rotation.x, wheelTransformFR.rotation.y, 0.0f);
+	}
+
+	void WheelPos()
+	{
+		Vector3 wheelPosition = Vector3.zero;
+		Quaternion wheelRotation = Quaternion.identity;
+
+		colliderFR.GetWorldPose(out wheelPosition, out wheelRotation);
+		colliderFL.GetWorldPose(out wheelPosition, out wheelRotation);
+		colliderRR.GetWorldPose(out wheelPosition, out wheelRotation);
+		colliderRL.GetWorldPose(out wheelPosition, out wheelRotation);
 	}
 
 	void WheelRotate()
 	{
-		wheelTransformFL.Rotate(colliderFL.rpm / 180 * 360 * Time.fixedDeltaTime, 0, 0);
-		wheelTransformFR.Rotate(colliderFR.rpm / 180 * 360 * Time.fixedDeltaTime, 0, 0);
-		wheelTransformRL.Rotate(colliderRL.rpm / 180 * 360 * Time.fixedDeltaTime, 0, 0);
-		wheelTransformRR.Rotate(colliderRR.rpm / 180 * 360 * Time.fixedDeltaTime, 0, 0);
+		wheelTransformFL.Rotate(colliderFL.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
+		wheelTransformFR.Rotate(colliderFR.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
+		wheelTransformRL.Rotate(colliderRL.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
+		wheelTransformRR.Rotate(colliderRR.rpm / 60 * 360 * Time.fixedDeltaTime, 0, 0);
 	}
 }

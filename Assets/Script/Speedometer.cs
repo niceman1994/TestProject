@@ -7,7 +7,7 @@ public class Speedometer : MonoBehaviour
 {
     [SerializeField] private RectTransform Arrow;
     [SerializeField] float MinArrowAngle = 0;
-    [SerializeField] float MaxArrowAngle = -315f;
+    [SerializeField] float MaxArrowAngle = -300f;
     [SerializeField] private Text speedText;
 
     void Start()
@@ -32,7 +32,7 @@ public class Speedometer : MonoBehaviour
         var procent = GameManager.Instance.Speed / MaxArrowAngle;
         var angle = (MaxArrowAngle - MinArrowAngle) * procent;
 
-        if (Arrow.rotation.y >= -315.0f && Arrow.rotation.y <= 0.0f)
+        if (Arrow.rotation.y >= -300.0f && Arrow.rotation.y <= 0.0f)
             Arrow.rotation = Quaternion.AngleAxis(-angle, Vector3.forward);
     }
 }
