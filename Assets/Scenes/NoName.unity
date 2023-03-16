@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4465782, g: 0.49641252, b: 0.5748167, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -6285,7 +6285,7 @@ WheelCollider:
     targetPosition: 0
   m_SuspensionDistance: 0.025
   m_ForceAppPointDistance: 0
-  m_Mass: 30
+  m_Mass: 40
   m_WheelDampingRate: 0.0001
   m_ForwardFriction:
     m_ExtremumSlip: 0.8
@@ -6347,7 +6347,7 @@ WheelCollider:
     targetPosition: 0
   m_SuspensionDistance: 0.025
   m_ForceAppPointDistance: 0
-  m_Mass: 30
+  m_Mass: 40
   m_WheelDampingRate: 0.0001
   m_ForwardFriction:
     m_ExtremumSlip: 0.8
@@ -26575,7 +26575,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: c73c82cc5b816834c8cd898a5bc4c7ce, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f7c1d3fd118b1de42b346afab5ed5971, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -41168,10 +41168,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LeftBackLight: {fileID: 725725012}
   RightBackLight: {fileID: 925490538}
-  tireTransformFL: {fileID: 7538827938690908927}
-  tireTransformFR: {fileID: 7530103147262175431}
-  tireTransformRL: {fileID: 7538840242358757063}
-  tireTransformRR: {fileID: 7538958104128734395}
   colliderFR: {fileID: 1637609728}
   colliderFL: {fileID: 1770670118}
   colliderRR: {fileID: 305364104}

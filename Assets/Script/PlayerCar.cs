@@ -59,7 +59,6 @@ public class PlayerCar : MonoBehaviour
 	void FixedUpdate()
 	{
 		Control();
-		WheelPos();
 	}
 
 	void Update()
@@ -68,7 +67,6 @@ public class PlayerCar : MonoBehaviour
 		wheelTransformFR.Rotate(Vector3.up, colliderFR.steerAngle - prevSteerAngle, Space.World);
 		prevSteerAngle = colliderFR.steerAngle;
 		BackLightOnOff();
-		wheelLock();
 	}
 
 	void BackLightOnOff()
@@ -150,6 +148,17 @@ public class PlayerCar : MonoBehaviour
 		colliderFR.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
 		colliderFL.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
 
+		if (Input.GetKeyDown(KeyCode.RightArrow) && !Input.GetKeyDown(KeyCode.LeftArrow))
+		{
+			colliderRR.brakeTorque = decSpeed - (decSpeed * 0.8f);
+			colliderRL.brakeTorque = decSpeed - (decSpeed * 0.8f);
+		}
+		else if (Input.GetKeyDown(KeyCode.LeftArrow) && !Input.GetKeyDown(KeyCode.RightArrow))
+		{
+			colliderRR.brakeTorque = decSpeed - (decSpeed * 0.8f);
+			colliderRL.brakeTorque = decSpeed - (decSpeed * 0.8f);
+		}
+
 		Drift();
 		WheelRotate();
 	}
@@ -171,19 +180,6 @@ public class PlayerCar : MonoBehaviour
 				colliderRL.brakeTorque = decSpeed - (decSpeed * 0.25f);
 
 				transform.Rotate(Vector3.up, Input.GetAxis("Horizontal") * 90.0f * Time.deltaTime);
-			}
-		}
-		else
-		{
-			if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
-			{
-				colliderRR.brakeTorque = decSpeed * 0.1f;
-				colliderRL.brakeTorque = decSpeed * 0.1f;
-			}
-			else if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
-			{
-				colliderRR.brakeTorque = decSpeed * 0.1f;
-				colliderRL.brakeTorque = decSpeed * 0.1f;
 			}
 		}
 	}
