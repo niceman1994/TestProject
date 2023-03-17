@@ -7,11 +7,6 @@ public class PlayerCar : MonoBehaviour
 	[SerializeField] private GameObject LeftBackLight;
 	[SerializeField] private GameObject RightBackLight;
 
-	//public Transform tireTransformFL;
-	//public Transform tireTransformFR;
-	//public Transform tireTransformRL;
-	//public Transform tireTransformRR;
-
 	public WheelCollider colliderFR;
 	public WheelCollider colliderFL;
 	public WheelCollider colliderRR;
@@ -148,12 +143,13 @@ public class PlayerCar : MonoBehaviour
 		colliderFR.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
 		colliderFL.steerAngle = Input.GetAxis("Horizontal") * SteerAngle;
 
-		if (Input.GetKeyDown(KeyCode.RightArrow) && !Input.GetKeyDown(KeyCode.LeftArrow))
+		if (Input.GetKeyDown(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
 		{
 			colliderRR.brakeTorque = decSpeed - (decSpeed * 0.8f);
 			colliderRL.brakeTorque = decSpeed - (decSpeed * 0.8f);
 		}
-		else if (Input.GetKeyDown(KeyCode.LeftArrow) && !Input.GetKeyDown(KeyCode.RightArrow))
+
+		if (Input.GetKeyDown(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
 		{
 			colliderRR.brakeTorque = decSpeed - (decSpeed * 0.8f);
 			colliderRL.brakeTorque = decSpeed - (decSpeed * 0.8f);
@@ -174,23 +170,27 @@ public class PlayerCar : MonoBehaviour
 
 				transform.Rotate(Vector3.up, Input.GetAxis("Horizontal") * 90.0f * Time.deltaTime);
 			}
-			else if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
+
+			if (Input.GetKeyUp(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
+			{
+				wheelTransformFL.Rotate(wheelTransformFL.rotation.x, 0.0f, 0.0f);
+				wheelTransformFR.Rotate(wheelTransformFR.rotation.x, 0.0f, 0.0f);
+			}
+
+			if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
 			{
 				colliderRR.brakeTorque = decSpeed - (decSpeed * 0.25f);
 				colliderRL.brakeTorque = decSpeed - (decSpeed * 0.25f);
 
 				transform.Rotate(Vector3.up, Input.GetAxis("Horizontal") * 90.0f * Time.deltaTime);
 			}
+
+			if (Input.GetKeyUp(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
+			{
+				wheelTransformFL.Rotate(wheelTransformFL.rotation.x, 0.0f, 0.0f);
+				wheelTransformFR.Rotate(wheelTransformFR.rotation.x, 0.0f, 0.0f);
+			}
 		}
-	}
-
-	void wheelLock()
-	{
-		if (wheelTransformFL.rotation.z != 0)
-			wheelTransformFL.rotation = Quaternion.Euler(wheelTransformFL.rotation.x, wheelTransformFL.rotation.y, 0.0f);
-
-		if (wheelTransformFR.rotation.z != 0)
-			wheelTransformFR.rotation = Quaternion.Euler(wheelTransformFR.rotation.x, wheelTransformFR.rotation.y, 0.0f);
 	}
 
 	void WheelPos()
