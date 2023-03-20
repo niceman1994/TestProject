@@ -20,24 +20,31 @@ public class CountDown : MonoBehaviour
 
     IEnumerator countDown()
     {
-        yield return null;
+        while (true)
+        {
+            yield return null;
 
-        CountSound.Play();
-        Count.text = CountNum.ToString();
-        yield return new WaitForSeconds(1.0f);
+            if (GameManager.Instance.IntroCanvas.activeInHierarchy == false)
+            {
+                CountSound.Play();
+                Count.text = CountNum.ToString();
+                yield return new WaitForSeconds(1.0f);
 
-        CountNum -= 1;
-        Count.text = CountNum.ToString();
-        yield return new WaitForSeconds(1.0f);
+                CountNum -= 1;
+                Count.text = CountNum.ToString();
+                yield return new WaitForSeconds(1.0f);
 
-        CountNum -= 1;
-        Count.text = CountNum.ToString();
-        yield return new WaitForSeconds(1.0f);
+                CountNum -= 1;
+                Count.text = CountNum.ToString();
+                yield return new WaitForSeconds(1.0f);
 
-        Count.text = "Start";
-        RaceStart = true;
-        yield return new WaitForSeconds(1.0f);
-        Count.SetActive(false);
+                Count.text = "Start";
+                RaceStart = true;
+                yield return new WaitForSeconds(1.0f);
+                Count.SetActive(false);
+            }
+            else break;
+        }
     }
 
     public bool GetStart()

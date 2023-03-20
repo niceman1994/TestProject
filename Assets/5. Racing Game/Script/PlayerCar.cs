@@ -41,7 +41,7 @@ public class PlayerCar : MonoBehaviour
 	void Start()
 	{
 		rigid.centerOfMass = new Vector3(0.0f, -0.15f, 0.2f);
-		power = 15.0f;
+		power = 18.0f;
 		StartCoroutine(BoosterPower());
 		SideRRwheel = colliderRR.sidewaysFriction;
 		SideRLwheel = colliderRL.sidewaysFriction;
@@ -56,12 +56,15 @@ public class PlayerCar : MonoBehaviour
 
     void Update()
 	{
-		tireTransformFL.Rotate(Vector3.up, (colliderFL.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
-		tireTransformFR.Rotate(Vector3.up, (colliderFR.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
-		prevSteerAngle = colliderFR.steerAngle;
-		Control();
-		Drift();
-		BackLightOnOff();
+		if (GameManager.Instance.StartRace == true)
+		{
+			tireTransformFL.Rotate(Vector3.up, (colliderFL.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
+			tireTransformFR.Rotate(Vector3.up, (colliderFR.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
+			prevSteerAngle = colliderFR.steerAngle;
+			Control();
+			Drift();
+			BackLightOnOff();
+		}
 	}
 
     private void OnCollisionEnter(Collision collision)
