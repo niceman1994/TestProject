@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.4465782, g: 0.49641252, b: 0.5748167, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -23214,7 +23214,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f7c1d3fd118b1de42b346afab5ed5971, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c73c82cc5b816834c8cd898a5bc4c7ce, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -37785,8 +37785,8 @@ Rigidbody:
   m_GameObject: {fileID: 7533187771804919591}
   serializedVersion: 2
   m_Mass: 500
-  m_Drag: 0
-  m_AngularDrag: 5
+  m_Drag: 0.1
+  m_AngularDrag: 10
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0

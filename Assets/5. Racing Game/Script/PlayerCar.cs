@@ -40,9 +40,9 @@ public class PlayerCar : MonoBehaviour
 
 	void Start()
 	{
-		rigid.centerOfMass = new Vector3(0.0f, -1.0f, 0.0f);
-		power = 10.0f;
-
+		rigid.centerOfMass = new Vector3(0.0f, -0.15f, 0.2f);
+		power = 15.0f;
+		StartCoroutine(BoosterPower());
 		SideRRwheel = colliderRR.sidewaysFriction;
 		SideRLwheel = colliderRL.sidewaysFriction;
 	}
@@ -56,8 +56,8 @@ public class PlayerCar : MonoBehaviour
 
     void Update()
 	{
-		tireTransformFL.Rotate(Vector3.up, colliderFL.steerAngle - prevSteerAngle, Space.World);
-		tireTransformFR.Rotate(Vector3.up, colliderFR.steerAngle - prevSteerAngle, Space.World);
+		tireTransformFL.Rotate(Vector3.up, (colliderFL.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
+		tireTransformFR.Rotate(Vector3.up, (colliderFR.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
 		prevSteerAngle = colliderFR.steerAngle;
 		Control();
 		Drift();
@@ -140,15 +140,27 @@ public class PlayerCar : MonoBehaviour
 		}
 	}
 
+	IEnumerator BoosterPower() // TODO : 추후 수정
+	{
+		while (true)
+		{
+			yield return null;
+
+			if (GameManager.Instance.useBooster == true && GameManager.Instance.BoosterTime > 0.0f)
+				rigid.drag = 0.02f;
+			else if (GameManager.Instance.useBooster == false)
+			{
+				rigid.drag = 0.5f;
+				yield return null;
+				rigid.drag = 0.1f;
+			}
+		}
+	}
+
 	void Control()
 	{
 		currentSpeed = 2 * 3.14f * colliderRL.radius * colliderRL.rpm * 60 / 1000;
 		currentSpeed = Mathf.Round(currentSpeed);
-
-		if (GameManager.Instance.useBooster == true)
-			maxTorque = 120;
-		else
-			maxTorque = 60;
 
 		if (currentSpeed <= 0 && currentSpeed > -maxSpeed)
 		{
@@ -198,10 +210,10 @@ public class PlayerCar : MonoBehaviour
 			if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
 				driftStop();
 		}
-		else if (!Input.GetKey(KeyCode.LeftShift) && 
-			GameManager.Instance.tireMarks[0].emitting == true && 
+		else if (!Input.GetKey(KeyCode.LeftShift) &&
+			GameManager.Instance.tireMarks[0].emitting == true &&
 			GameManager.Instance.tireMarks[1].emitting == true)
-        {
+		{
 			SideRRwheel.stiffness += Time.deltaTime * 1.2f;
 			SideRLwheel.stiffness += Time.deltaTime * 1.2f;
 
@@ -229,7 +241,9 @@ public class PlayerCar : MonoBehaviour
 		else if (!Input.GetKey(KeyCode.LeftShift) &&
 			GameManager.Instance.tireMarks[0].emitting == false &&
 			GameManager.Instance.tireMarks[1].emitting == false)
-			rigid.ResetCenterOfMass();
+		{
+			//rigid.ResetCenterOfMass();
+		}
 	}
 
 	void driftStart()
