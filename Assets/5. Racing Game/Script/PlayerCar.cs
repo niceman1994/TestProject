@@ -42,7 +42,6 @@ public class PlayerCar : MonoBehaviour
 	{
 		rigid.centerOfMass = new Vector3(0.0f, -0.15f, 0.2f);
 		power = 18.0f;
-		StartCoroutine(BoosterPower());
 		SideRRwheel = colliderRR.sidewaysFriction;
 		SideRLwheel = colliderRL.sidewaysFriction;
 	}
@@ -143,23 +142,6 @@ public class PlayerCar : MonoBehaviour
 		}
 	}
 
-	IEnumerator BoosterPower() // TODO : 추후 수정
-	{
-		while (true)
-		{
-			yield return null;
-
-			if (GameManager.Instance.useBooster == true && GameManager.Instance.BoosterTime > 0.0f)
-				rigid.drag = 0.02f;
-			else if (GameManager.Instance.useBooster == false)
-			{
-				rigid.drag = 0.5f;
-				yield return null;
-				rigid.drag = 0.1f;
-			}
-		}
-	}
-
 	void Control()
 	{
 		currentSpeed = 2 * 3.14f * colliderRL.radius * colliderRL.rpm * 60 / 1000;
@@ -213,39 +195,41 @@ public class PlayerCar : MonoBehaviour
 			if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
 				driftStop();
 		}
-		else if (!Input.GetKey(KeyCode.LeftShift) &&
-			GameManager.Instance.tireMarks[0].emitting == true &&
+
+		if (GameManager.Instance.tireMarks[0].emitting == true &&
 			GameManager.Instance.tireMarks[1].emitting == true)
 		{
-			SideRRwheel.stiffness += Time.deltaTime * 1.2f;
-			SideRLwheel.stiffness += Time.deltaTime * 1.2f;
-
-			if (SideRRwheel.stiffness >= 1.0f)
-				driftStop();
-			else if (SideRRwheel.stiffness < 1.0f && SideRRwheel.stiffness >= 0.0f)
+			if (!Input.GetKey(KeyCode.LeftShift))
 			{
-				if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
-				{
-					if (Input.GetAxis("Horizontal") > 0)
-						stiffnessDown();
-					else if (Input.GetAxis("Horizontal") < 0)
-						stiffnessUp();
-				}
+				SideRRwheel.stiffness += Time.deltaTime * 1.2f;
+				SideRLwheel.stiffness += Time.deltaTime * 1.2f;
 
-				if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
+				if (SideRRwheel.stiffness >= 1.0f)
+					driftStop();
+				else if (SideRRwheel.stiffness < 1.0f && SideRRwheel.stiffness >= 0.0f)
 				{
-					if (Input.GetAxis("Horizontal") > 0)
-						stiffnessUp();
-					else if (Input.GetAxis("Horizontal") < 0)
-						stiffnessDown();
+					if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
+					{
+						if (Input.GetAxis("Horizontal") > 0)
+							stiffnessDown();
+						else if (Input.GetAxis("Horizontal") < 0)
+							stiffnessUp();
+					}
+
+					if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
+					{
+						if (Input.GetAxis("Horizontal") > 0)
+							stiffnessUp();
+						else if (Input.GetAxis("Horizontal") < 0)
+							stiffnessDown();
+					}
 				}
 			}
-		}
-		else if (!Input.GetKey(KeyCode.LeftShift) &&
-			GameManager.Instance.tireMarks[0].emitting == false &&
-			GameManager.Instance.tireMarks[1].emitting == false)
-		{
-			//rigid.ResetCenterOfMass();
+			else
+			{
+				SideRRwheel.stiffness = 1.0f;
+				SideRLwheel.stiffness = 1.0f;
+			}
 		}
 	}
 

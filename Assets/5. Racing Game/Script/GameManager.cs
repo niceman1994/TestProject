@@ -32,22 +32,19 @@ public class GameManager : ManagerSingleton<GameManager>
 
     private void Update()
     {
-        if (IntroCanvas.activeInHierarchy == false)
+        Speed = Mathf.Abs(Car.transform.GetComponent<PlayerCar>().getCurrentSpeed());
+        StartRace = CountText.GetComponent<CountDown>().GetStart();
+
+        if (tireMarks[0].emitting == true && tireMarks[1].emitting == true)
         {
-            Speed = Mathf.Abs(Car.transform.GetComponent<PlayerCar>().getCurrentSpeed());
-            StartRace = CountText.GetComponent<CountDown>().GetStart();
-
-            if (tireMarks[0].emitting == true && tireMarks[1].emitting == true)
-            {
-                driftGauge += Time.deltaTime * Mathf.Abs(Input.GetAxis("Horizontal")) * 0.0001f * Speed;
-                BoostGauge.fillAmount += driftGauge;
-            }
-            else if (tireMarks[0].emitting == false && tireMarks[1].emitting == false)
-                driftGauge = 0.0f;
-
-            GaugeUp();
-            UseBooster();
+            driftGauge += Time.deltaTime * Mathf.Abs(Input.GetAxis("Horizontal")) * 0.0001f * Speed;
+            BoostGauge.fillAmount += driftGauge;
         }
+        else if (tireMarks[0].emitting == false && tireMarks[1].emitting == false)
+            driftGauge = 0.0f;
+
+        GaugeUp();
+        UseBooster();
     }
 
     public void TrailStartEmitter()
