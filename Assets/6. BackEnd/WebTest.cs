@@ -27,7 +27,7 @@ public class WebTest : MonoBehaviour
     // 쿼리를 보냄 -> 튜플로 받음 -> 언팩 후 json파일을 만들고 양식에 맞춰서 엑셀에 저장
 
     // URL 텍스트를 가져오려면 배포할 때 접속 권한을 "나만"이 아닌 모든 사용자로 바꿔야한다.
-    string URL = "https://script.google.com/macros/library/d/1CXiofTRgPWjZHx8POAVapFKFJ759hwDtuJdEiIDJhaeoPQ2EocGEXwaR/9";
+    string URL = "https://script.google.com/macros/s/AKfycbyY4O6U_UBByXTx8cCFnbhlLF_3jVGArcUftKgYHJGsxXPS4x8j8bCw_efONuSzkIpK-A/exec";
 
     IEnumerator Start() // IEnumerator 로 하는 이유는 웹에서 어떤 것을 요청한 후 응답을 기다리기 위해서이다.
     {
