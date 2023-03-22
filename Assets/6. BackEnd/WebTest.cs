@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Networking;
 
 /*
@@ -29,13 +30,40 @@ public class WebTest : MonoBehaviour
     // URL 텍스트를 가져오려면 배포할 때 접속 권한을 "나만"이 아닌 모든 사용자로 바꿔야한다.
     string URL = "https://script.google.com/macros/s/AKfycbyY4O6U_UBByXTx8cCFnbhlLF_3jVGArcUftKgYHJGsxXPS4x8j8bCw_efONuSzkIpK-A/exec";
 
+    public InputField IdInput;
+    public InputField PwdInput;
+
     IEnumerator Start() // IEnumerator 로 하는 이유는 웹에서 어떤 것을 요청한 후 응답을 기다리기 위해서이다.
     {
-        using (var www = UnityWebRequest.Get(URL))
+        //using (var www = UnityWebRequest.Get(URL))
+        //{
+        //    yield return www.SendWebRequest();
+        //
+        //    print(www.downloadHandler.text);
+        //}
+
+        WWWForm form = new WWWForm();
+        form.AddField("id", "");
+        form.AddField("pwd", "");
+
+        using (var www = UnityWebRequest.Post(URL, form))
         {
             yield return www.SendWebRequest();
 
             print(www.downloadHandler.text);
         }
     }
+
+	private void Update()
+	{
+		
+	}
+
+    void Register()
+	{
+        if (Input.GetKey(KeyCode.Return))
+		{
+
+		}
+	}
 }
