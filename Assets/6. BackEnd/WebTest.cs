@@ -19,6 +19,52 @@ using UnityEngine.Networking;
     -> HTTP POST 요청은 데이터를 전달할 때 사용한다.
 */
 
+[System.Serializable]
+public class Userform
+{
+    public string userName;
+    public string phoneNumber;
+    public string message;
+    public string log;
+
+    public Userform(string userName, string phoneNumber)
+	{
+        this.userName = userName;
+        this.phoneNumber = phoneNumber;
+	}
+
+    /*
+    public UserInfo(string userName, string phoneNumber, string message, string log)
+    {
+        this.userName = userName;
+        this.phoneNumber = phoneNumber;
+        this.message = message;
+        this.log = log;
+    }
+    */
+}
+
+[System.Serializable]
+public class UserData
+{
+    public Userform1[] people;
+}
+
+[System.Serializable]
+public class Userform1
+{
+    public string name;
+    public string phone;
+    public string age;
+
+    public Userform1(string name, string phone, string age)
+    {
+        this.name = name;
+        this.phone = phone;
+        this.age = age;
+    }
+}
+
 public class WebTest : MonoBehaviour
 {
     // 엑셀 파일의 행(가로) 값을 로우라고 하고, 열(세로) 값을 컬럼이라고 한다. (sql에 대한 공부를 하면 좋음)
@@ -34,6 +80,38 @@ public class WebTest : MonoBehaviour
     public InputField PwdInput;
     string id, pwd;
 
+    IEnumerator Start()
+	{
+        TextAsset textAsset = Resources.Load<TextAsset>("Json/123");
+        UserData Info = JsonUtility.FromJson<UserData>(textAsset.text);
+        //Userform1 Info = JsonUtility.FromJson<Userform1>(textAsset.text);        
+
+        string userdata = JsonUtility.ToJson(Info);
+
+        print(userdata);
+        
+        //print(Info.name);
+        //print(Info.age);
+
+        yield return null;
+
+        /*
+        WWWForm form = new WWWForm();
+        form.AddField(nameof(Info.userName), Info.userName);
+        form.AddField(nameof(Info.phoneNumber), Info.phoneNumber);
+        form.AddField(nameof(Info.message), Info.message);
+        form.AddField(nameof(Info.log), Info.log);
+
+        using (var www = UnityWebRequest.Post(URL, form))
+        {
+            yield return www.SendWebRequest();
+
+            print(www.downloadHandler.text);
+        }
+        */
+    }
+
+    /*
     void Start() 
     {
         id = IdInput.text.Trim();
@@ -79,4 +157,5 @@ public class WebTest : MonoBehaviour
             print(www.downloadHandler.text);
         }
     }
+    */
 }
