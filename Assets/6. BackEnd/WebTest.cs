@@ -32,8 +32,38 @@ public class WebTest : MonoBehaviour
 
     public InputField IdInput;
     public InputField PwdInput;
+    string id, pwd;
 
-    IEnumerator Start() // IEnumerator 로 하는 이유는 웹에서 어떤 것을 요청한 후 응답을 기다리기 위해서이다.
+    void Start() 
+    {
+        id = IdInput.text.Trim();
+        pwd = PwdInput.text.Trim();
+
+        Register();
+    }
+
+    bool SetIDPass()
+    {
+        if (id == "" || pwd == "") return false;
+        else return true;
+    }
+
+    public void Register()
+    {
+        if (!SetIDPass())
+        {
+            print("아이디 또는 비밀번호가 비어있습니다.");
+            return;
+        }
+
+        WWWForm form = new WWWForm();
+        form.AddField("id", "qwasd");
+        form.AddField("pwd", "123");
+
+        StartCoroutine(Post(form));
+    }
+
+    IEnumerator Post(WWWForm form) // IEnumerator 로 하는 이유는 웹에서 어떤 것을 요청한 후 응답을 기다리기 위해서이다.
     {
         //using (var www = UnityWebRequest.Get(URL))
         //{
@@ -42,10 +72,6 @@ public class WebTest : MonoBehaviour
         //    print(www.downloadHandler.text);
         //}
 
-        WWWForm form = new WWWForm();
-        form.AddField("id", "");
-        form.AddField("pwd", "");
-
         using (var www = UnityWebRequest.Post(URL, form))
         {
             yield return www.SendWebRequest();
@@ -53,17 +79,4 @@ public class WebTest : MonoBehaviour
             print(www.downloadHandler.text);
         }
     }
-
-	private void Update()
-	{
-		
-	}
-
-    void Register()
-	{
-        if (Input.GetKey(KeyCode.Return))
-		{
-
-		}
-	}
 }
