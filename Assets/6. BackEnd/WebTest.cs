@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using UnityEngine.EventSystems;
 
 /*
     지정된 함수를 실행하면 자동적으로 trigger가 실행된다.
@@ -65,6 +66,12 @@ public class Userform1
     }
 }
 
+[System.Serializable]
+public class GoogleData
+{
+    public string order, result, msg, value;
+}
+
 public class WebTest : MonoBehaviour
 {
     // 엑셀 파일의 행(가로) 값을 로우라고 하고, 열(세로) 값을 컬럼이라고 한다. (sql에 대한 공부를 하면 좋음)
@@ -74,88 +81,134 @@ public class WebTest : MonoBehaviour
     // 쿼리를 보냄 -> 튜플로 받음 -> 언팩 후 json파일을 만들고 양식에 맞춰서 엑셀에 저장
 
     // URL 텍스트를 가져오려면 배포할 때 접속 권한을 "나만"이 아닌 모든 사용자로 바꿔야한다.
-    string URL = "https://script.google.com/macros/s/AKfycbyY4O6U_UBByXTx8cCFnbhlLF_3jVGArcUftKgYHJGsxXPS4x8j8bCw_efONuSzkIpK-A/exec";
+    string URL = "https://script.google.com/macros/s/AKfycbxK8Lj5jkr_6IQcpevcoYzQHlHRQTMmH-NGFJebv4glrltUFsYDke_MUqLc91Ozdome/exec";
 
-    public InputField IdInput;
-    public InputField PwdInput;
-    string id, pwd;
+    public GoogleData GD;
+    public InputField IDInput;
+    public InputField PWDInput;
+    public Button login;
+    public Button Register;
+    public Button Resetpwd;
 
-    IEnumerator Start()
+    void Start()
 	{
+        EventSystem.current.SetSelectedGameObject(IDInput.gameObject);
+
+        /*
         TextAsset textAsset = Resources.Load<TextAsset>("Json/123");
         UserData Info = JsonUtility.FromJson<UserData>(textAsset.text);
         //Userform1 Info = JsonUtility.FromJson<Userform1>(textAsset.text);        
 
         string userdata = JsonUtility.ToJson(Info);
 
-        print(userdata);
-        
+        //if (Info.people.)
+        //print(userdata);
+
         //print(Info.name);
         //print(Info.age);
 
         yield return null;
-
-        /*
-        WWWForm form = new WWWForm();
-        form.AddField(nameof(Info.userName), Info.userName);
-        form.AddField(nameof(Info.phoneNumber), Info.phoneNumber);
-        form.AddField(nameof(Info.message), Info.message);
-        form.AddField(nameof(Info.log), Info.log);
-
-        using (var www = UnityWebRequest.Post(URL, form))
-        {
-            yield return www.SendWebRequest();
-
-            print(www.downloadHandler.text);
-        }
         */
+        //form.AddField(nameof(Info.userName), Info.userName);
+        //form.AddField(nameof(Info.phoneNumber), Info.phoneNumber);
+        //form.AddField(nameof(Info.message), Info.message);
+        //form.AddField(nameof(Info.log), Info.log);
     }
 
-    /*
-    void Start() 
+    private void Update()
     {
-        id = IdInput.text.Trim();
-        pwd = PwdInput.text.Trim();
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (EventSystem.current.currentSelectedGameObject == IDInput.gameObject)
+                EventSystem.current.SetSelectedGameObject(PWDInput.gameObject);
+            else if (EventSystem.current.currentSelectedGameObject == PWDInput.gameObject)
+                EventSystem.current.SetSelectedGameObject(login.gameObject);
+            else if (EventSystem.current.currentSelectedGameObject == login.gameObject)
+                EventSystem.current.SetSelectedGameObject(Register.gameObject);
+            else if (EventSystem.current.currentSelectedGameObject == Register.gameObject)
+                EventSystem.current.SetSelectedGameObject(Resetpwd.gameObject);
+            else if (EventSystem.current.currentSelectedGameObject == Resetpwd.gameObject)
+                EventSystem.current.SetSelectedGameObject(IDInput.gameObject);
+        }
 
-        Register();
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            if (EventSystem.current.currentSelectedGameObject == IDInput.gameObject)
+                EventSystem.current.SetSelectedGameObject(PWDInput.gameObject);
+        }
     }
 
     bool SetIDPass()
     {
-        if (id == "" || pwd == "") return false;
+        if (IDInput.text.Trim() == "" || PWDInput.text.Trim() == "") return false;
         else return true;
     }
 
-    public void Register()
+    public void register()
     {
         if (!SetIDPass())
         {
-            print("아이디 또는 비밀번호가 비어있습니다.");
+            print("아이디 또는 비밀번호가 비어있습니다");
             return;
         }
 
         WWWForm form = new WWWForm();
-        form.AddField("id", "qwasd");
-        form.AddField("pwd", "123");
+        form.AddField("order", "register");
+        form.AddField("id", IDInput.text.Trim());
+        form.AddField("pwd", PWDInput.text.Trim());
 
         StartCoroutine(Post(form));
     }
 
-    IEnumerator Post(WWWForm form) // IEnumerator 로 하는 이유는 웹에서 어떤 것을 요청한 후 응답을 기다리기 위해서이다.
+    public void Login()
     {
-        //using (var www = UnityWebRequest.Get(URL))
-        //{
-        //    yield return www.SendWebRequest();
-        //
-        //    print(www.downloadHandler.text);
-        //}
-
-        using (var www = UnityWebRequest.Post(URL, form))
+        if (!SetIDPass())
         {
+            print("아이디 또는 비밀번호가 비어있습니다");
+            return;
+        }
+
+        WWWForm form = new WWWForm();
+        form.AddField("order", "login");
+        form.AddField("id", IDInput.text.Trim());
+        form.AddField("pwd", PWDInput.text.Trim());
+
+        StartCoroutine(Post(form));
+    }
+
+    void OnApplicationQuit()
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("order", "logout");
+
+        StartCoroutine(Post(form));
+    }
+
+    IEnumerator Post(WWWForm form)
+    {
+        using (UnityWebRequest www = UnityWebRequest.Post(URL, form)) // 반드시 using을 써야한다
+        {
+            www.downloadHandler = new DownloadHandlerBuffer();
+
             yield return www.SendWebRequest();
 
-            print(www.downloadHandler.text);
+            if (www.isDone) print(www.downloadHandler.text);
+            else print("웹의 응답이 없습니다.");
         }
     }
-    */
+
+    public void EnterLogin()
+    {
+        if (EventSystem.current.currentSelectedGameObject == PWDInput.gameObject)
+        {
+            if (IDInput.text != null && PWDInput.text != null)
+                EventSystem.current.SetSelectedGameObject(login.gameObject);
+        }
+    }
+
+    public void pwdReset()
+    {
+        if (EventSystem.current.currentSelectedGameObject == Resetpwd.gameObject)
+            PWDInput.text = null;
+    }
 }

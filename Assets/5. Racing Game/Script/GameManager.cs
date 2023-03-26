@@ -19,6 +19,10 @@ public class GameManager : ManagerSingleton<GameManager>
     public float Angle;
     public bool StartRace;
 
+    public int CountNum;
+    public Text Count;
+    public AudioSource CountSound;
+
     private void Start()
     {
         Application.targetFrameRate = 60;
@@ -28,12 +32,15 @@ public class GameManager : ManagerSingleton<GameManager>
         downForceValue = 500.0f;
         Angle = Car.GetComponent<PlayerCar>().getSteerAngle();
         useBooster = false;
+        StartRace = false;
+        CountNum = 3;
+        StartCoroutine(countDown());
     }
 
     private void Update()
     {
+        RaceStart();
         Speed = Mathf.Abs(Car.transform.GetComponent<PlayerCar>().getCurrentSpeed());
-        StartRace = CountText.GetComponent<CountDown>().GetStart();
 
         if (tireMarks[0].emitting == true && tireMarks[1].emitting == true)
         {
@@ -57,6 +64,54 @@ public class GameManager : ManagerSingleton<GameManager>
 	{
         foreach (TrailRenderer trail in tireMarks)
             trail.emitting = false;
+    }
+
+    void RaceStart()
+    {
+        if (Input.GetKey(KeyCode.Return))
+        {
+            if (IntroCanvas.activeInHierarchy == true)
+            {
+                IntroCanvas.SetActive(false);
+                StartRace = true;
+            }
+        }
+    }
+
+    IEnumerator countDown()
+    {
+        while (true)
+        {
+            yield return null;
+
+            if (StartRace == true)
+            {
+                CountSound.Play();
+                Count.text = CountNum.ToString();
+                yield return new WaitForSeconds(1.0f);
+
+                CountNum -= 1;
+                Count.text = CountNum.ToString();
+                yield return new WaitForSeconds(1.0f);
+
+                CountNum -= 1;
+                Count.text = CountNum.ToString();
+                yield return new WaitForSeconds(1.0f);
+
+                CountNum -= 1;
+                Count.text = "Start";
+                yield return new WaitForSeconds(1.0f);
+                Count.SetActive(false);
+
+                if (CountNum == 0)
+                {
+                    CountNum = 0;
+                    yield return null;
+                    CountSound.Stop();
+                    yield break;
+                }
+            }
+        }
     }
 
     void GaugeUp()

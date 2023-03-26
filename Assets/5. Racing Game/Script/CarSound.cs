@@ -8,7 +8,7 @@ public class CarSound : MonoBehaviour
     [SerializeField] private AudioSource driftSound;
     [SerializeField] private AudioSource boosterSound;
     [SerializeField] private AudioClip booster;
-    [SerializeField] private GameObject[] Nitros;
+    [SerializeField] private ParticleSystem[] Nitros;
 
     void Update()
     {
@@ -56,10 +56,12 @@ public class CarSound : MonoBehaviour
 
     void Booster()
     {
-        if (GameManager.Instance.useBooster == true)
+        foreach (ParticleSystem element in Nitros)
         {
-            foreach (GameObject element in Nitros)
-                element.GetComponent<ParticleSystem>().Play();
+            if (GameManager.Instance.useBooster == true)
+                element.Play();
+            else
+                element.Stop();
         }
 
         if (GameManager.Instance.BoosterTime >= 1.0f && GameManager.Instance.useBooster == true)

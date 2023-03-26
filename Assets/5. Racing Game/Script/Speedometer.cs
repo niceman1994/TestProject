@@ -21,7 +21,7 @@ public class Speedometer : MonoBehaviour
             speedText.text = "00" + GameManager.Instance.Speed.ToString();
         else if (GameManager.Instance.Speed < 100.0f)
             speedText.text = "0" + GameManager.Instance.Speed.ToString();
-        else if (GameManager.Instance.Speed >= 100.0f && GameManager.Instance.Speed < 300.0f)
+        else if (GameManager.Instance.Speed >= 100.0f)
             speedText.text = GameManager.Instance.Speed.ToString();
 
         UpdateArrow();
@@ -32,7 +32,12 @@ public class Speedometer : MonoBehaviour
         var procent = GameManager.Instance.Speed / MaxArrowAngle;
         var angle = (MaxArrowAngle - MinArrowAngle) * procent;
 
-        if (Arrow.rotation.y >= -300.0f && Arrow.rotation.y <= 0.0f)
+        if (Arrow.rotation.y >= -315.0f && Arrow.rotation.y <= 0.0f)
+        {
             Arrow.rotation = Quaternion.AngleAxis(-angle, Vector3.forward);
+
+            if (GameManager.Instance.Speed > 315.0f)
+                Arrow.rotation = Quaternion.AngleAxis(-315.0f, Vector3.forward);
+        }
     }
 }

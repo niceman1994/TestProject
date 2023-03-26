@@ -30,8 +30,8 @@ public class PlayerCar : MonoBehaviour
 	private Rigidbody rigid;
 	private float power;
 
-	WheelFrictionCurve SideRRwheel;
 	WheelFrictionCurve SideRLwheel;
+	WheelFrictionCurve SideRRwheel;
 
 	private void Awake()
 	{
@@ -41,24 +41,23 @@ public class PlayerCar : MonoBehaviour
 	void Start()
 	{
 		rigid.centerOfMass = new Vector3(0.0f, -0.15f, 0.2f);
-		power = 18.0f;
+		power = 30.0f;
 		SideRRwheel = colliderRR.sidewaysFriction;
 		SideRLwheel = colliderRL.sidewaysFriction;
 	}
 
     void FixedUpdate()
     {
-		GetFLWheelPos();
-		GetFRWheelPos();
+		UpdateWheelPoses();
 		rigid.AddForce(-transform.up * GameManager.Instance.downForceValue * rigid.velocity.magnitude);
 	}
 
     void Update()
 	{
-		if (GameManager.Instance.StartRace == true)
+		Steer();
+
+		if (GameManager.Instance.CountNum == 0)
 		{
-			tireTransformFL.Rotate(Vector3.up, (colliderFL.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
-			tireTransformFR.Rotate(Vector3.up, (colliderFR.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
 			prevSteerAngle = colliderFR.steerAngle;
 			Control();
 			Drift();
@@ -79,27 +78,27 @@ public class PlayerCar : MonoBehaviour
         }
     }
 
-	void GetFLWheelPos() // 왼쪽 앞바퀴 위치 고정
+	void Steer()
+    {
+		tireTransformFL.Rotate(Vector3.up, (colliderFL.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
+		tireTransformFR.Rotate(Vector3.up, (colliderFR.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
+	}
+
+	void UpdateWheelPoses()
+    {
+		UpdateWheelPos(colliderFL, wheelTransformFL);
+		UpdateWheelPos(colliderFR, wheelTransformFR);
+    }
+
+	void UpdateWheelPos(WheelCollider _collider, Transform _tire) // 앞바퀴 위치 고정
     {
 		Vector3 wheelPosition = Vector3.zero;
 		Quaternion wheelRotation = Quaternion.identity;
 
-		colliderFL.GetWorldPose(out wheelPosition, out wheelRotation);
+		_collider.GetWorldPose(out wheelPosition, out wheelRotation);
 
-		wheelTransformFL.transform.position = wheelPosition;
-		wheelTransformFL.transform.rotation = wheelRotation;
-		
-	}
-
-	void GetFRWheelPos() // 오른쪽 앞바퀴 위치 고정
-	{
-		Vector3 wheelPosition = Vector3.zero;
-		Quaternion wheelRotation = Quaternion.identity;
-
-		colliderFR.GetWorldPose(out wheelPosition, out wheelRotation);
-
-		wheelTransformFR.transform.position = wheelPosition;
-		wheelTransformFR.transform.rotation = wheelRotation;
+		_tire.position = wheelPosition;
+		_tire.rotation = wheelRotation;
 	}
 
 	void BackLightOnOff()
@@ -149,8 +148,16 @@ public class PlayerCar : MonoBehaviour
 
 		if (currentSpeed <= 0 && currentSpeed > -maxSpeed)
 		{
-			colliderRR.motorTorque = -maxTorque * Input.GetAxis("Vertical") * power;
-			colliderRL.motorTorque = -maxTorque * Input.GetAxis("Vertical") * power;
+			if (GameManager.Instance.useBooster == false)
+			{
+				colliderRR.motorTorque = -maxTorque * Input.GetAxis("Vertical") * power;
+				colliderRL.motorTorque = -maxTorque * Input.GetAxis("Vertical") * power;
+			}
+			else
+            {
+				colliderRR.motorTorque = -maxTorque * Input.GetAxis("Vertical") * power * 1.1f;
+				colliderRL.motorTorque = -maxTorque * Input.GetAxis("Vertical") * power * 1.1f;
+			}
 		}
 		else if (currentSpeed >= 0 && currentSpeed < maxRevSpeed)
 		{
@@ -189,46 +196,43 @@ public class PlayerCar : MonoBehaviour
 		{
 			if (Input.GetKey(KeyCode.RightArrow))
 				driftStart();
-			else if (Input.GetKey(KeyCode.LeftArrow))
+
+			if (Input.GetKey(KeyCode.LeftArrow))
 				driftStart();
-
-			if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
-				driftStop();
 		}
+		else if (GameManager.Instance.tireMarks[0].emitting == true &&
+				GameManager.Instance.tireMarks[1].emitting == true)
+        {
+			SideRRwheel.stiffness += Time.deltaTime * 1.5f;
+			SideRLwheel.stiffness += Time.deltaTime * 1.5f;
 
-		if (GameManager.Instance.tireMarks[0].emitting == true &&
-			GameManager.Instance.tireMarks[1].emitting == true)
-		{
-			if (!Input.GetKey(KeyCode.LeftShift))
+			if (SideRRwheel.stiffness >= 2.0f)
+				driftStop();
+			else if (SideRRwheel.stiffness < 2.0f && SideRRwheel.stiffness >= 0.0f)
 			{
-				SideRRwheel.stiffness += Time.deltaTime * 1.2f;
-				SideRLwheel.stiffness += Time.deltaTime * 1.2f;
-
-				if (SideRRwheel.stiffness >= 1.0f)
-					driftStop();
-				else if (SideRRwheel.stiffness < 1.0f && SideRRwheel.stiffness >= 0.0f)
+				if (Input.GetKey(KeyCode.RightArrow))
 				{
-					if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
+					if (Input.GetAxis("Horizontal") > 0)
 					{
-						if (Input.GetAxis("Horizontal") > 0)
-							stiffnessDown();
-						else if (Input.GetAxis("Horizontal") < 0)
-							stiffnessUp();
+						tireTransformFL.Rotate(Vector3.up, (colliderFL.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
+						tireTransformFR.Rotate(Vector3.up, (colliderFR.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
+						stiffnessDown();
 					}
+					else if (Input.GetAxis("Horizontal") < 0)
+						stiffnessUp();
+				}
 
-					if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
+				if (Input.GetKey(KeyCode.LeftArrow))
+				{
+					if (Input.GetAxis("Horizontal") > 0)
+						stiffnessUp();
+					else if (Input.GetAxis("Horizontal") < 0)
 					{
-						if (Input.GetAxis("Horizontal") > 0)
-							stiffnessUp();
-						else if (Input.GetAxis("Horizontal") < 0)
-							stiffnessDown();
+						tireTransformFL.Rotate(Vector3.up, (colliderFL.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
+						tireTransformFR.Rotate(Vector3.up, (colliderFR.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
+						stiffnessDown();
 					}
 				}
-			}
-			else
-			{
-				SideRRwheel.stiffness = 1.0f;
-				SideRLwheel.stiffness = 1.0f;
 			}
 		}
 	}
@@ -248,8 +252,8 @@ public class PlayerCar : MonoBehaviour
 	void driftStop()
     {
 		GameManager.Instance.TrailStopEmitter();
-		SideRRwheel.stiffness = 1.0f;
-		SideRLwheel.stiffness = 1.0f;
+		SideRRwheel.stiffness = 2.0f;
+		SideRLwheel.stiffness = 2.0f;
 
 		colliderRR.sidewaysFriction = SideRRwheel;
 		colliderRL.sidewaysFriction = SideRLwheel;
