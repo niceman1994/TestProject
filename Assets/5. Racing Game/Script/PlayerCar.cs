@@ -203,8 +203,8 @@ public class PlayerCar : MonoBehaviour
 		else if (GameManager.Instance.tireMarks[0].emitting == true &&
 				GameManager.Instance.tireMarks[1].emitting == true)
         {
-			SideRRwheel.stiffness += Time.deltaTime * 1.5f;
-			SideRLwheel.stiffness += Time.deltaTime * 1.5f;
+			SideRRwheel.stiffness += Time.deltaTime * 0.8f;
+			SideRLwheel.stiffness += Time.deltaTime * 0.8f;
 
 			if (SideRRwheel.stiffness >= 2.0f)
 				driftStop();
@@ -216,21 +216,21 @@ public class PlayerCar : MonoBehaviour
 					{
 						tireTransformFL.Rotate(Vector3.up, (colliderFL.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
 						tireTransformFR.Rotate(Vector3.up, (colliderFR.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
-						stiffnessDown();
+						stiffnessUp();
 					}
 					else if (Input.GetAxis("Horizontal") < 0)
-						stiffnessUp();
+						stiffnessDown();
 				}
 
 				if (Input.GetKey(KeyCode.LeftArrow))
 				{
 					if (Input.GetAxis("Horizontal") > 0)
-						stiffnessUp();
+						stiffnessDown();
 					else if (Input.GetAxis("Horizontal") < 0)
 					{
 						tireTransformFL.Rotate(Vector3.up, (colliderFL.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
 						tireTransformFR.Rotate(Vector3.up, (colliderFR.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
-						stiffnessDown();
+						stiffnessUp();
 					}
 				}
 			}
@@ -261,8 +261,8 @@ public class PlayerCar : MonoBehaviour
 
 	void stiffnessUp()
     {
-		SideRRwheel.stiffness += Time.deltaTime;
-		SideRLwheel.stiffness += Time.deltaTime;
+		SideRRwheel.stiffness += Time.deltaTime * 0.8f;
+		SideRLwheel.stiffness += Time.deltaTime * 0.8f;
 
 		colliderRR.sidewaysFriction = SideRRwheel;
 		colliderRL.sidewaysFriction = SideRLwheel;
@@ -272,8 +272,8 @@ public class PlayerCar : MonoBehaviour
 
 	void stiffnessDown()
     {
-		SideRRwheel.stiffness -= Time.deltaTime;
-		SideRLwheel.stiffness -= Time.deltaTime;
+		SideRRwheel.stiffness -= Time.deltaTime * 0.8f;
+		SideRLwheel.stiffness -= Time.deltaTime * 0.8f;
 
 		colliderRR.sidewaysFriction = SideRRwheel;
 		colliderRL.sidewaysFriction = SideRLwheel;

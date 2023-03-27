@@ -78,7 +78,7 @@ public class GameManager : ManagerSingleton<GameManager>
         }
     }
 
-    IEnumerator countDown()
+    public IEnumerator countDown()
     {
         while (true)
         {
