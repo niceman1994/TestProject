@@ -8,15 +8,16 @@ public class GameManager : ManagerSingleton<GameManager>
 	public GameObject Car;
     public GameObject CountText;
     public GameObject IntroCanvas;
+    public Transform UI;
     public float Speed;
+    public float driftAngle;
 	public float driftGauge;
-	public TrailRenderer[] tireMarks;
-	public Image BoostGauge;
+    public TrailRenderer[] tireMarks;
+    public Image BoostGauge;
 	public GameObject[] BoostItem;
     public float BoosterTime;
     public bool useBooster;
     public float downForceValue;
-    public float Angle;
     public bool StartRace;
 
     public int CountNum;
@@ -30,10 +31,11 @@ public class GameManager : ManagerSingleton<GameManager>
         BoostItem[1].SetActive(false);
         BoosterTime = 3.5f;
         downForceValue = 500.0f;
-        Angle = Car.GetComponent<PlayerCar>().getSteerAngle();
         useBooster = false;
         StartRace = false;
         CountNum = 3;
+        tireMarks[0].emitting = false;
+        tireMarks[1].emitting = false;
         StartCoroutine(countDown());
     }
 
@@ -44,7 +46,7 @@ public class GameManager : ManagerSingleton<GameManager>
 
         if (tireMarks[0].emitting == true && tireMarks[1].emitting == true)
         {
-            driftGauge += Time.deltaTime * Mathf.Abs(Input.GetAxis("Horizontal")) * 0.0001f * Speed;
+            driftGauge = Time.deltaTime * 0.005f;
             BoostGauge.fillAmount += driftGauge;
         }
         else if (tireMarks[0].emitting == false && tireMarks[1].emitting == false)
@@ -52,6 +54,12 @@ public class GameManager : ManagerSingleton<GameManager>
 
         GaugeUp();
         UseBooster();
+    }
+
+    float driftangle()
+    {
+        driftAngle = Car.GetComponent<PlayerCar>().getSteerAngle();
+        return driftAngle;
     }
 
     public void TrailStartEmitter()
@@ -73,6 +81,7 @@ public class GameManager : ManagerSingleton<GameManager>
             if (IntroCanvas.activeInHierarchy == true)
             {
                 IntroCanvas.SetActive(false);
+                UI.SetActive(true);
                 StartRace = true;
             }
         }
@@ -113,6 +122,7 @@ public class GameManager : ManagerSingleton<GameManager>
             }
         }
     }
+
 
     void GaugeUp()
     {

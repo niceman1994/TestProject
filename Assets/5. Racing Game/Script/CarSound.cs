@@ -7,13 +7,13 @@ public class CarSound : MonoBehaviour
     [SerializeField] private AudioSource engineSound;
     [SerializeField] private AudioSource driftSound;
     [SerializeField] private AudioSource boosterSound;
-    [SerializeField] private AudioClip booster;
     [SerializeField] private ParticleSystem[] Nitros;
 
     void Update()
     {
         Driving();
         Booster();
+        PauseSound();
     }
 
     void Driving()
@@ -67,7 +67,23 @@ public class CarSound : MonoBehaviour
         if (GameManager.Instance.BoosterTime >= 1.0f && GameManager.Instance.useBooster == true)
         {
             if (boosterSound.isPlaying == false)
-                boosterSound.PlayOneShot(booster);
+                boosterSound.Play();
+        }
+    }
+
+    void PauseSound()
+    {
+        if (Time.timeScale == 0)
+        {
+            engineSound.Pause();
+            driftSound.Pause();
+            boosterSound.Pause();
+        }
+        else
+        {
+            engineSound.UnPause();
+            driftSound.UnPause();
+            boosterSound.UnPause();
         }
     }
 }
