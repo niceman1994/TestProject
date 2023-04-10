@@ -6,12 +6,15 @@ using UnityEngine.UI;
 public class GameManager : ManagerSingleton<GameManager>
 {
 	public GameObject Car;
-    public GameObject CountText;
     public GameObject IntroCanvas;
+    public Text Lapcount;
+    public int lap;
     public Transform UI;
+
     public float Speed;
-    public float driftAngle;
 	public float driftGauge;
+    public float driftTime;
+
     public TrailRenderer[] tireMarks;
     public Image BoostGauge;
 	public GameObject[] BoostItem;
@@ -20,13 +23,13 @@ public class GameManager : ManagerSingleton<GameManager>
     public float downForceValue;
     public bool StartRace;
 
-    public int CountNum;
     public Text Count;
-    public AudioSource CountSound;
+    public int CountNum;
 
     private void Start()
     {
         Application.targetFrameRate = 60;
+        lap = 1;
         BoostItem[0].SetActive(false);
         BoostItem[1].SetActive(false);
         BoosterTime = 3.5f;
@@ -42,11 +45,12 @@ public class GameManager : ManagerSingleton<GameManager>
     private void Update()
     {
         RaceStart();
+        Lapcount.text = lap.ToString();
         Speed = Mathf.Abs(Car.transform.GetComponent<PlayerCar>().getCurrentSpeed());
 
         if (tireMarks[0].emitting == true && tireMarks[1].emitting == true)
         {
-            driftGauge = Time.deltaTime * 0.005f;
+            driftGauge = driftTime * Speed * 0.0003f;
             BoostGauge.fillAmount += driftGauge;
         }
         else if (tireMarks[0].emitting == false && tireMarks[1].emitting == false)
@@ -56,22 +60,22 @@ public class GameManager : ManagerSingleton<GameManager>
         UseBooster();
     }
 
-    float driftangle()
-    {
-        driftAngle = Car.GetComponent<PlayerCar>().getSteerAngle();
-        return driftAngle;
-    }
-
     public void TrailStartEmitter()
 	{
         foreach (TrailRenderer trail in tireMarks)
+        {
+            driftTime += Time.deltaTime * 0.5f;
             trail.emitting = true;
+        }
 	}
 
 	public void TrailStopEmitter()
 	{
         foreach (TrailRenderer trail in tireMarks)
+        {
+            driftTime = 0.0f;
             trail.emitting = false;
+        }
     }
 
     void RaceStart()
@@ -95,7 +99,7 @@ public class GameManager : ManagerSingleton<GameManager>
 
             if (StartRace == true)
             {
-                CountSound.Play();
+                SoundManager.Instance.GameBGM[2].Play();
                 Count.text = CountNum.ToString();
                 yield return new WaitForSeconds(1.0f);
 
@@ -115,14 +119,16 @@ public class GameManager : ManagerSingleton<GameManager>
                 if (CountNum == 0)
                 {
                     CountNum = 0;
-                    yield return null;
-                    CountSound.Stop();
-                    yield break;
+                    break;
                 }
             }
         }
     }
 
+    public void LapcountUp()
+    {
+        lap += 1;
+    }
 
     void GaugeUp()
     {

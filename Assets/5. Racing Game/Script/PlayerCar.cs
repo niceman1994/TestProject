@@ -30,6 +30,8 @@ public class PlayerCar : MonoBehaviour
 	private Rigidbody rigid;
 	private float power;
 
+	WheelFrictionCurve ForRRwheel;
+	WheelFrictionCurve ForRLwheel;
 	WheelFrictionCurve SideRLwheel;
 	WheelFrictionCurve SideRRwheel;
 
@@ -41,7 +43,9 @@ public class PlayerCar : MonoBehaviour
 	void Start()
 	{
 		rigid.centerOfMass = new Vector3(0.0f, -0.15f, 0.2f);
-		power = 30.0f;
+		power = 22.0f;
+		ForRRwheel = colliderRR.forwardFriction;
+		ForRLwheel = colliderRL.forwardFriction;
 		SideRRwheel = colliderRR.sidewaysFriction;
 		SideRLwheel = colliderRL.sidewaysFriction;
 	}
@@ -67,18 +71,26 @@ public class PlayerCar : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Track"))
-        {
+		if (collision.gameObject.CompareTag("Track"))
+		{
 			if (GameManager.Instance.tireMarks[0].emitting == true &&
 				GameManager.Instance.tireMarks[1].emitting == true)
-            {
-				foreach (TrailRenderer element in GameManager.Instance.tireMarks)
-					element.emitting = false;
-            }
-        }
-    }
+				driftStop();
+		}
+	}
 
-	void Steer()
+    private void OnTriggerEnter(Collider other)
+    {
+		if (other.gameObject.CompareTag("Line"))
+		{
+			GameManager.Instance.LapcountUp();
+
+			if (GameManager.Instance.lap == 2)
+				SoundManager.Instance.GameBGM[4].Play();
+		}
+	}
+
+    void Steer()
     {
 		tireTransformFL.Rotate(Vector3.up, (colliderFL.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
 		tireTransformFR.Rotate(Vector3.up, (colliderFR.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
@@ -148,16 +160,10 @@ public class PlayerCar : MonoBehaviour
 
 		if (currentSpeed <= 0 && currentSpeed > -maxSpeed)
 		{
-			if (GameManager.Instance.useBooster == false)
-			{
-				colliderRR.motorTorque = -maxTorque * Input.GetAxis("Vertical") * power;
-				colliderRL.motorTorque = -maxTorque * Input.GetAxis("Vertical") * power;
-			}
+			if (GameManager.Instance.useBooster == true)
+				BoosterOn();
 			else
-            {
-				colliderRR.motorTorque = -maxTorque * Input.GetAxis("Vertical") * power * 1.1f;
-				colliderRL.motorTorque = -maxTorque * Input.GetAxis("Vertical") * power * 1.1f;
-			}
+				BoosterOff();
 		}
 		else if (currentSpeed >= 0 && currentSpeed < maxRevSpeed)
 		{
@@ -189,7 +195,7 @@ public class PlayerCar : MonoBehaviour
 		wheelTransformRL.Rotate(colliderRL.rpm / 30 * 360 * Time.deltaTime, 0.0f, 0.0f);
 		wheelTransformRR.Rotate(colliderRR.rpm / 30 * 360 * Time.deltaTime, 0.0f, 0.0f);
 	}
-	
+
 	void Drift()
 	{
 		if (Input.GetKey(KeyCode.LeftShift))
@@ -203,8 +209,8 @@ public class PlayerCar : MonoBehaviour
 		else if (GameManager.Instance.tireMarks[0].emitting == true &&
 				GameManager.Instance.tireMarks[1].emitting == true)
         {
-			SideRRwheel.stiffness += Time.deltaTime * 0.8f;
-			SideRLwheel.stiffness += Time.deltaTime * 0.8f;
+			SideRRwheel.stiffness += Time.deltaTime * 1.25f;
+			SideRLwheel.stiffness += Time.deltaTime * 1.25f;
 
 			if (SideRRwheel.stiffness >= 2.0f)
 				driftStop();
@@ -281,15 +287,33 @@ public class PlayerCar : MonoBehaviour
 		transform.Rotate(new Vector3(0.0f, Input.GetAxis("Horizontal") * SteerAngle * Time.deltaTime, 0.0f), Space.World);
 	}
 
+	void BoosterOn()
+    {
+		ForRRwheel.stiffness = 1.5f;
+		ForRLwheel.stiffness = 1.5f;
+
+		colliderRR.forwardFriction = ForRRwheel;
+		colliderRL.forwardFriction = ForRLwheel;
+
+		colliderRR.motorTorque = -maxTorque * Input.GetAxis("Vertical") * (power + 10.0f);
+		colliderRL.motorTorque = -maxTorque * Input.GetAxis("Vertical") * (power + 10.0f);
+	}
+
+	void BoosterOff()
+    {
+		ForRRwheel.stiffness = 2.0f;
+		ForRLwheel.stiffness = 2.0f;
+
+		colliderRR.forwardFriction = ForRRwheel;
+		colliderRL.forwardFriction = ForRLwheel;
+
+		colliderRR.motorTorque = -maxTorque * Input.GetAxis("Vertical") * power;
+		colliderRL.motorTorque = -maxTorque * Input.GetAxis("Vertical") * power;
+	}
+
 	public float getCurrentSpeed()
     {
 		float _speed = currentSpeed;
 		return _speed;
-    }
-
-	public float getSteerAngle()
-    {
-		float _angle = SteerAngle;
-		return _angle;
     }
 }

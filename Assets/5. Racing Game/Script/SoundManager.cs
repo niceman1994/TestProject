@@ -10,7 +10,6 @@ public class SoundManager : ManagerSingleton<SoundManager>
     public Button Exitbutton;
     public Button Restartbutton;
     public AudioSource[] GameBGM;
-    public AudioSource[] GameSound;
 
     void Start()
     {
@@ -24,8 +23,8 @@ public class SoundManager : ManagerSingleton<SoundManager>
 
         if (GameManager.Instance.IntroCanvas.activeInHierarchy == false)
         {
-            foreach (AudioSource element in GameBGM)
-                element.Stop();
+            GameBGM[0].Stop();
+            GameBGM[1].Stop();
         }
 
         setPause();
@@ -52,13 +51,13 @@ public class SoundManager : ManagerSingleton<SoundManager>
                 if (Pause.activeInHierarchy == false)
                 {
                     Pause.SetActive(true);
-                    GameSound[0].Play();
+                    GameBGM[3].Play();
                     Time.timeScale = 0;
                 }
                 else
                 {
                     Pause.SetActive(false);
-                    GameSound[0].Play();
+                    GameBGM[3].Play();
                     Time.timeScale = 1;
                 }
             }
