@@ -58,6 +58,9 @@ public class GameManager : ManagerSingleton<GameManager>
 
         GaugeUp();
         UseBooster();
+
+        if (lap == 2)
+            StartRace = false;
     }
 
     public void TrailStartEmitter()

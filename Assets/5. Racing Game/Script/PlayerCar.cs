@@ -67,6 +67,12 @@ public class PlayerCar : MonoBehaviour
 			Drift();
 			BackLightOnOff();
 		}
+
+		if (GameManager.Instance.StartRace == false)
+        {
+			colliderRR.brakeTorque = 4000.0f;
+			colliderRL.brakeTorque = 4000.0f;
+		}
 	}
 
     private void OnCollisionEnter(Collision collision)
@@ -273,7 +279,7 @@ public class PlayerCar : MonoBehaviour
 		colliderRR.sidewaysFriction = SideRRwheel;
 		colliderRL.sidewaysFriction = SideRLwheel;
 
-		transform.Rotate(new Vector3(0.0f, Input.GetAxis("Horizontal") * SteerAngle * Time.deltaTime, 0.0f), Space.World);
+		transform.Rotate(new Vector3(0.0f, Input.GetAxis("Horizontal") * (SteerAngle + 20.0f) * Time.deltaTime, 0.0f), Space.World);
 	}
 
 	void stiffnessDown()
@@ -284,7 +290,7 @@ public class PlayerCar : MonoBehaviour
 		colliderRR.sidewaysFriction = SideRRwheel;
 		colliderRL.sidewaysFriction = SideRLwheel;
 
-		transform.Rotate(new Vector3(0.0f, Input.GetAxis("Horizontal") * SteerAngle * Time.deltaTime, 0.0f), Space.World);
+		transform.Rotate(new Vector3(0.0f, Input.GetAxis("Horizontal") * (SteerAngle + 20.0f) * Time.deltaTime, 0.0f), Space.World);
 	}
 
 	void BoosterOn()
