@@ -15,7 +15,7 @@ public class Speedometer : MonoBehaviour
         speedText.text = "000";
     }
     
-    void Update()
+    void FixedUpdate()
     {
         if (GameManager.Instance.Speed < 10.0f)
             speedText.text = "00" + GameManager.Instance.Speed.ToString();

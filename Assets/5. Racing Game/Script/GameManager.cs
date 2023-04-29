@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class GameManager : ManagerSingleton<GameManager>
 {
 	public GameObject Car;
+    public GameObject Logo;
     public GameObject IntroCanvas;
     public Text Lapcount;
     public int lap;
@@ -42,11 +43,9 @@ public class GameManager : ManagerSingleton<GameManager>
         StartCoroutine(countDown());
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        RaceStart();
-        Lapcount.text = lap.ToString();
-        Speed = Mathf.Abs(Car.transform.GetComponent<PlayerCar>().getCurrentSpeed());
+        UseBooster();
 
         if (tireMarks[0].emitting == true && tireMarks[1].emitting == true)
         {
@@ -55,12 +54,21 @@ public class GameManager : ManagerSingleton<GameManager>
         }
         else if (tireMarks[0].emitting == false && tireMarks[1].emitting == false)
             driftGauge = 0.0f;
+    }
 
+    private void Update()
+    {
+        RaceStart();
         GaugeUp();
-        UseBooster();
+
+        Speed = Mathf.Abs(Car.transform.GetComponent<PlayerCar>().getCurrentSpeed());
+        Lapcount.text = lap.ToString();
 
         if (lap == 2)
+        {
             StartRace = false;
+            CountNum = 3;
+        }
     }
 
     public void TrailStartEmitter()
@@ -83,9 +91,14 @@ public class GameManager : ManagerSingleton<GameManager>
 
     void RaceStart()
     {
-        if (Input.GetKey(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Return))
         {
-            if (IntroCanvas.activeInHierarchy == true)
+            if (Logo.activeInHierarchy == true)
+            {
+                Logo.SetActive(false);
+                IntroCanvas.SetActive(true);
+            }
+            else
             {
                 IntroCanvas.SetActive(false);
                 UI.SetActive(true);
@@ -174,7 +187,7 @@ public class GameManager : ManagerSingleton<GameManager>
         }
 
         if (useBooster == true)
-            BoosterTime = BoosterTime - Time.deltaTime >= 0.0f ? BoosterTime - Time.deltaTime : 0.0f;
+            BoosterTime = BoosterTime - Time.fixedDeltaTime >= 0.0f ? BoosterTime - Time.fixedDeltaTime : 0.0f;
 
         if (BoosterTime == 0.0f)
         {

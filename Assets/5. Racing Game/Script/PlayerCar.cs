@@ -12,8 +12,6 @@ public class PlayerCar : MonoBehaviour
 	[SerializeField] private WheelCollider colliderRR;
 	[SerializeField] private WheelCollider colliderRL;
 
-	[SerializeField] private Transform tireTransformFL;
-	[SerializeField] private Transform tireTransformFR;
 	[SerializeField] private Transform wheelTransformFL;
 	[SerializeField] private Transform wheelTransformFR;
 	[SerializeField] private Transform wheelTransformRL;
@@ -53,15 +51,11 @@ public class PlayerCar : MonoBehaviour
     void FixedUpdate()
     {
 		UpdateWheelPoses();
-		rigid.AddForce(-transform.up * GameManager.Instance.downForceValue * rigid.velocity.magnitude);
-	}
-
-    void Update()
-	{
 		Steer();
 
 		if (GameManager.Instance.CountNum == 0)
 		{
+			rigid.AddForce(-transform.up * GameManager.Instance.downForceValue * rigid.velocity.magnitude);
 			prevSteerAngle = colliderFR.steerAngle;
 			Control();
 			Drift();
@@ -69,7 +63,7 @@ public class PlayerCar : MonoBehaviour
 		}
 
 		if (GameManager.Instance.StartRace == false)
-        {
+		{
 			colliderRR.brakeTorque = 4000.0f;
 			colliderRL.brakeTorque = 4000.0f;
 		}
@@ -98,8 +92,8 @@ public class PlayerCar : MonoBehaviour
 
     void Steer()
     {
-		tireTransformFL.Rotate(Vector3.up, (colliderFL.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
-		tireTransformFR.Rotate(Vector3.up, (colliderFR.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
+		wheelTransformFL.Rotate(Vector3.up, (colliderFL.steerAngle - prevSteerAngle) * Time.fixedDeltaTime, Space.World);
+		wheelTransformFR.Rotate(Vector3.up, (colliderFR.steerAngle - prevSteerAngle) * Time.fixedDeltaTime, Space.World);
 	}
 
 	void UpdateWheelPoses()
@@ -226,8 +220,8 @@ public class PlayerCar : MonoBehaviour
 				{
 					if (Input.GetAxis("Horizontal") > 0)
 					{
-						tireTransformFL.Rotate(Vector3.up, (colliderFL.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
-						tireTransformFR.Rotate(Vector3.up, (colliderFR.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
+						wheelTransformFL.Rotate(Vector3.up, (colliderFL.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
+						wheelTransformFR.Rotate(Vector3.up, (colliderFR.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
 						stiffnessUp();
 					}
 					else if (Input.GetAxis("Horizontal") < 0)
@@ -240,8 +234,8 @@ public class PlayerCar : MonoBehaviour
 						stiffnessDown();
 					else if (Input.GetAxis("Horizontal") < 0)
 					{
-						tireTransformFL.Rotate(Vector3.up, (colliderFL.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
-						tireTransformFR.Rotate(Vector3.up, (colliderFR.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
+						wheelTransformFL.Rotate(Vector3.up, (colliderFL.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
+						wheelTransformFR.Rotate(Vector3.up, (colliderFR.steerAngle - prevSteerAngle) * Time.deltaTime, Space.World);
 						stiffnessUp();
 					}
 				}

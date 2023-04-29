@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class RaceTime : MonoBehaviour
 {
     [SerializeField] private Text Timecount;
+    [SerializeField] private GameObject RaceEnd;
+    [SerializeField] private Text RaceEndTime;
 
     float time;
     int minute;
@@ -16,7 +18,7 @@ public class RaceTime : MonoBehaviour
         minute = 0;
     }
 
-    void Update()
+    private void FixedUpdate()
     {
         if (GameManager.Instance.CountNum == 0)
             PassingTime();
@@ -25,9 +27,16 @@ public class RaceTime : MonoBehaviour
     void PassingTime()
     {
         if (Time.timeScale == 1)
-            time += Time.deltaTime;
-        else if (GameManager.Instance.StartRace == false)
-            time += 0.0f;
+        {
+            time += Time.fixedDeltaTime;
+
+            if (GameManager.Instance.lap == 2)
+            {
+                RaceEnd.SetActive(true);
+                RaceEndTime.text = Timecount.text;
+                return;
+            }
+        }
 
         if (time > 60.0f)
         {

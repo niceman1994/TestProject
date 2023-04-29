@@ -7,7 +7,6 @@ using UnityEngine.EventSystems;
 public class SoundManager : ManagerSingleton<SoundManager>
 {
     public GameObject Pause;
-    public Button Exitbutton;
     public Button Restartbutton;
     public AudioSource[] GameBGM;
 
@@ -18,22 +17,18 @@ public class SoundManager : ManagerSingleton<SoundManager>
 
     void Update()
     {
-        if (!GameBGM[0].isPlaying && !GameBGM[1].isPlaying)
-            GameBGM[1].Play();
-
-        if (GameManager.Instance.IntroCanvas.activeInHierarchy == false)
+        if (GameManager.Instance.Logo.activeInHierarchy == false)
         {
             GameBGM[0].Stop();
-            GameBGM[1].Stop();
+
+            if (!GameBGM[1].isPlaying)
+                GameBGM[1].Play();
         }
 
-        setPause();
-    }
+        if (GameManager.Instance.IntroCanvas.activeInHierarchy == false && GameBGM[1].isPlaying)
+            GameBGM[1].Stop();
 
-    public void ClickExit()
-    {
-        if (EventSystem.current.IsPointerOverGameObject())
-            Pause.SetActive(true);
+        setPause();
     }
 
     public void ClickRestart()
